@@ -7,23 +7,45 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController {
     var dataController:DataController!
 
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        print("Loaded main")
+        startPokedex()
+        activityIndicator.startAnimating()
         
+    }
+    
+    func startPokedex() {
+        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        var pokedexList = try! context.fetch(fetchRequest)
+        
+        if pokedexList.isEmpty {
+            fetchPokedex {success in
+                if success {
+                    print("Pokedex fetched from API")
+                    pokedexList = try! context.fetch(fetchRequest)
+                    store.dispatch(UpdateListAction(list: pokedexList))
+                }
+            }
+        }
+        print("Pokedex fetched from CoreData")
+        store.dispatch(UpdateListAction(list: pokedexList))
     }
     
     override func viewDidAppear(_ animated: Bool) {
         let storyboard = UIStoryboard(name: "PokedexList", bundle: nil)
         let mainViewController = storyboard.instantiateViewController(withIdentifier: "PokedexListViewController") as! PokedexListViewController
-        mainViewController.dataController = dataController
-        present(mainViewController, animated: true,
-                completion: nil)
+        mainViewController.dataController = self.dataController
+        present(mainViewController, animated: true, completion: nil)
     }
 
     override func didReceiveMemoryWarning() {

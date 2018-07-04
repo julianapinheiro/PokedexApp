@@ -11,5 +11,13 @@ import ReSwift
 import CoreData
 
 struct PokedexListState {
+    var pokedexList:[PokemonId]
+
+    init() {
+        self.pokedexList = []
+    }
     
+    init? (pokedexList: [PokemonId]) {
+        self.pokedexList = pokedexList
+    }
 }

@@ -97,10 +97,10 @@
 		B954C86B20E6B7A200A4BD17 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B97A8E5C20EB9233007E0EBC /* DataController.swift */,
 				B9F0187120EC1B6F00319AF4 /* Pokemon+CoreDataClass.swift */,
 				B9F0187220EC1B6F00319AF4 /* Pokemon+CoreDataProperties.swift */,
 				B99D49A820E6D7B600F10AF1 /* PokemonData.xcdatamodeld */,
-				B97A8E5C20EB9233007E0EBC /* DataController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -133,9 +133,9 @@
 				B954C86A20E6B79200A4BD17 /* PokedexList */,
 				B954C86B20E6B7A200A4BD17 /* Model */,
 				B9BB64E620E3C85E004D901D /* LaunchScreen.storyboard */,
+				B99D49A620E6C1FD00F10AF1 /* Main.storyboard */,
 				B9BB64E420E3C85E004D901D /* Assets.xcassets */,
 				B9BB64E920E3C85E004D901D /* Info.plist */,
-				B99D49A620E6C1FD00F10AF1 /* Main.storyboard */,
 			);
 			path = "Pokédex";
 			sourceTree = "<group>";

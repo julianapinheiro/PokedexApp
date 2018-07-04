@@ -7,3 +7,18 @@
 //
 
 import Foundation
+import ReSwift
+
+func pokedexListReducer(action: Action, state: PokedexListState?) -> PokedexListState {
+    var state = state ?? PokedexListState()
+    print("pokedexListReducer called")
+    
+    switch action {
+    case let action as UpdateListAction:
+        state.pokedexList = action.list
+    default:
+        break
+    }
+    
+    return state
+}

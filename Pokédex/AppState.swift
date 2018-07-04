@@ -10,4 +10,13 @@ import ReSwift
 
 struct AppState: StateType {
     var pokedexListState:PokedexListState
+    
+    init() {
+        self.pokedexListState = PokedexListState()
+        print("Init appstate")
+    }
+    
+    init(pokedexListState: PokedexListState) {
+        self.pokedexListState = pokedexListState
+    }
 }

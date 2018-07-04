@@ -8,8 +8,8 @@
 
 import UIKit
 import CoreData
-import Alamofire
 import ObjectMapper
+import ReSwift
 
 class PokedexListTableCell: UITableViewCell {
     @IBOutlet weak var spriteImageView: UIImageView!
@@ -17,52 +17,40 @@ class PokedexListTableCell: UITableViewCell {
     
 }
 
-class PokedexListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
+class PokedexListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, StoreSubscriber {
     @IBOutlet weak var tableView: UITableView!
-    
-    var pokemon:[Pokemon]!
     
     var dataController:DataController!
     
-    var fetchedResultsController:NSFetchedResultsController<Pokemon>!
+    //var fetchedResultsController:NSFetchedResultsController<PokemonId>!
+    
+    func newState(state: PokedexListState) {
+        tableView.reloadData()
+    }
+    
+    typealias StoreSubscriberStateType = PokedexListState
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        pokemon = []
-        
-        setUpFetchedResultsController()
 
-        fetchPokedex()
-
-        for index in 11...40 {
-            fetchPokemon(id: index, completion: { success in
-                self.tableView.reloadData()
-            })
+        //setUpFetchedResultsController()
+        //fetchPokedex()
+        store.subscribe(self) { state in
+            state.select { state in (state.pokedexListState) }
         }
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        //fetchedResultsController = nil
+        store.unsubscribe(self)
     }
-    
-    // temporary populate
-    func fetchPokedex() {
-        var poke = Pokemon(context: dataController.viewContext)
-        poke.name = "Oshawott"
-        poke.id = 501
-        pokemon.append(poke)
-        poke = Pokemon(context: dataController.viewContext)
-        poke.name = "Pignite"
-        poke.id = 499
-        pokemon.append(poke)
-        try? dataController.viewContext.save()
-    }
-    
-    fileprivate func setUpFetchedResultsController() {
-        let fetchRequest:NSFetchRequest<Pokemon> = Pokemon.fetchRequest()
+
+    /*fileprivate func setUpFetchedResultsController() {
+        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
@@ -74,7 +62,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         } catch {
             fatalError("The fetch could not be performed: \(error.localizedDescription)")
         }
-    }
+    }*/
     
     // -------------------------------------------------------------------------
     // MARK: - Table view data source
@@ -85,25 +73,25 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return fetchedResultsController.sections?.count ?? 1
+        return 1 //fetchedResultsController.sections?.count ?? 1
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        if (store.state.pokedexListState.pokedexList.count == 0) {
+            //tableView.reloadData()
+        }
+        return store.state.pokedexListState.pokedexList.count //fetchedResultsController.sections?[section].numberOfObjects ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokedexListTableCell")! as! PokedexListTableCell
-        let poke = fetchedResultsController.object(at: indexPath)
-        
-        //fetch()
+        //let poke = fetchedResultsController.object(at: indexPath)
+        let poke = store.state.pokedexListState.pokedexList[(indexPath as NSIndexPath).row]
         
         // Fetch pokemon sprite (if not saved yet)
         fetchSprite(pokemonId: Int(poke.id)) { result in
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+                tableView.reloadRows(at: [indexPath], with: .automatic)
         }
-        
         // Set the name and image
         cell.nameLabel?.text = poke.name?.capitalized
         cell.spriteImageView?.image = UIImage(contentsOfFile: spritePath.appendingPathComponent(String(poke.id)).relativePath) //image
@@ -113,7 +101,10 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
 }
 
-extension PokedexListViewController: NSFetchedResultsControllerDelegate {
+/*extension PokedexListViewController: NSFetchedResultsControllerDelegate {
+    // -------------------------------------------------------------------------
+    // MARK: - NSFetchedResultsController Delegate
+    
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
         switch type {
         case .insert:
@@ -146,4 +137,4 @@ extension PokedexListViewController: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
     }
-}
+}*/

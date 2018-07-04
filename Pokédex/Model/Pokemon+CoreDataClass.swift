@@ -19,7 +19,7 @@ public class Pokemon: NSManagedObject, Mappable {
     
     public required init?(map: Map) {
         // ???????? por que
-        var objectContext = (UIApplication.shared.delegate as! AppDelegate).dataController.viewContext
+        let objectContext = context
         let entity = NSEntityDescription.entity(forEntityName: "Pokemon", in: objectContext)
         super.init(entity: entity!, insertInto: objectContext)
 

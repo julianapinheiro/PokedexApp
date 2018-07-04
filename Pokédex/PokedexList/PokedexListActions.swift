@@ -7,3 +7,9 @@
 //
 
 import Foundation
+import ReSwift
+
+struct UpdateListAction: Action {
+    let list: [PokemonId]
+}
+
