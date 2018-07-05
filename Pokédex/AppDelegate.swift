@@ -21,13 +21,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let dataController = DataController(modelName: "PokemonData")
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         
         dataController.load()
-        
-        // Be able to use Data Controller on ViewController
+        // Be able to use Data Controller on ViewController ??? pode tirar dps
         let navigationController = window?.rootViewController as! ViewController
-        //let pokedexListViewController = navigationController.topViewController as! ViewController
         navigationController.dataController = dataController
         
         return true

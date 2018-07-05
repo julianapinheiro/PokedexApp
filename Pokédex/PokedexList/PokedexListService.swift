@@ -16,7 +16,7 @@ let spritePath:URL = getDocumentsDirectory().appendingPathComponent("pokemon")
 
 // Um request cria todos os objetos PokemonId :D
 func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
-    Alamofire.request((URL(string: root + "pokemon/?limit=802"))!).responseJSON(completionHandler: { response in
+    Alamofire.request((URL(string: root + "pokemon/?limit=" + String(pokedexSize)))!).responseJSON(completionHandler: { response in
         if let json = response.result.value as! [String: Any]? {
             let pokemonList = json["results"] as! NSArray
             for pokemonItem in pokemonList  {
@@ -50,37 +50,16 @@ func checkPokemon(id: Int) -> Bool {
     return false
 }
 
-// old
-func fetchPokemon(id: Int, completion: @escaping (_ success: Bool) -> Void) {
-    if checkPokemon(id: id) {
-        completion(true)
-        return
-    }
-    print("Fetching pokemon from API id=" + String(id))
-    Alamofire.request((URL(string: root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
-        print("Did request")
-        if let json = response.result.value {
-            let poke = Pokemon(JSON: json as! [String : Any])
-            context.insert(poke!)
-            try! context.save()
-            fetchSprite(pokemonId: id, completion: {_ in 
-                completion(true)
-            })
-        }
-    })
-    
-}
-
 // Fetch Sprite from API WORKING
 func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
     
     // If file already exists
     let dirPath = getDocumentsDirectory().appendingPathComponent("pokemon")
     let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
-    /*if FileManager.default.fileExists(atPath: filePath.relativePath) {
+    if FileManager.default.fileExists(atPath: filePath.relativePath) {
         print("Pokemon Sprite already saved for id=" + String(pokemonId))
         return
-    }*/
+    }
     
     // Create Directory "pokemon"
     try! FileManager.default.createDirectory(atPath: dirPath.relativePath, withIntermediateDirectories: true)

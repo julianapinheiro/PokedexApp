@@ -23,7 +23,7 @@ class ViewController: UIViewController {
     
     func startPokedex() {
         let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+        var sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         var pokedexList = try! context.fetch(fetchRequest)
@@ -39,6 +39,13 @@ class ViewController: UIViewController {
         }
         print("Pokedex fetched from CoreData")
         store.dispatch(UpdateListAction(list: pokedexList))
+        
+        let listFetchRequest:NSFetchRequest<Pokemon> = Pokemon.fetchRequest()
+        sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+        listFetchRequest.sortDescriptors = [sortDescriptor]
+        
+        let pokedexInfoList = try! context.fetch(listFetchRequest)
+        store.dispatch(UpdatePokemonInfoList(list: pokedexInfoList))
     }
     
     override func viewDidAppear(_ animated: Bool) {

@@ -8,7 +8,6 @@
 
 import Foundation
 import ReSwift
-import CoreData
 
 struct PokedexListState {
     var pokedexList:[PokemonId]
