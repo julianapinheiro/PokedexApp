@@ -35,7 +35,7 @@ public class Pokemon: NSManagedObject, Mappable {
                 break
             }
         }
-        return text
+        return text.replacingOccurrences(of: "\n", with: " ")
     },  toJSON: { (value: String?) -> Any? in return "object to json not supported" })
     
     let transformPokedexNumbers = TransformOf<Dictionary<String, String>, Any>(fromJSON: { (value: Any?) -> Dictionary<String, String>? in

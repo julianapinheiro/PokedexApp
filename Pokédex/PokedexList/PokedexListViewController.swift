@@ -38,8 +38,9 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         
         // UI Setup
         let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
-        barView.backgroundColor = UIColor(red:0.98, green:0.78, blue:0.78, alpha:1.0)
+        barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         view.addSubview(barView)
+        navBar.tintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {

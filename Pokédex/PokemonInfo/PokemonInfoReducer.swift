@@ -13,16 +13,30 @@ func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoS
     var state = state
     
     switch action {
+        
     case let action as SelectPokemonIdAction:
         state.selectedPokemonId = action.selectedPokemonId
         if let pokemon = state.pokemonInfoList.first(where: {$0.id == action.selectedPokemonId.id}) {
-            print("fetch info from coredata")
+            print("SelectPokemonIdAction: fetching pokemon from state.list")
             state.selectedPokemon = pokemon
+            
         } else {
+            print("SelectPokemonIdAction: fetching pokemon from api")
             fetchPokemon(id: Int(action.selectedPokemonId.id))
         }
+        
     case let action as UpdatePokemonAction:
         state.selectedPokemon = action.selectedPokemon
+        print("UpdatePokemonAction")
+    
+    case let action as AppendPokemonInfoList:
+        state.pokemonInfoList.append(action.pokemon)
+        print("AppendPokemonInfoList")
+    
+    case let action as SetPokemonInfoList:
+        state.pokemonInfoList = action.list
+        print("SetPokemonInfoList")
+        
     default:
         break
     }

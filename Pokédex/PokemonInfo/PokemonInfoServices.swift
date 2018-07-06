@@ -11,19 +11,25 @@ import Alamofire
 import ObjectMapper
 
 func fetchPokemon(id: Int) {
-    print("Fetching pokemon from API id=" + String(id))
+    print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
+    
     // Fetch pokemon/id
     Alamofire.request((URL(string: root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
-        print("Did request")
+        print("PokemonInfoServices: Did request")
         if let pokemonJSON = response.result.value as! [String : Any]? {
+            
             // Fetch pokemon-species/id
             Alamofire.request((URL(string: root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
-                print("Did request species")
+                print("PokemonInfoServices: Did request species")
                 if let pokemonSpeciesJSON = response.result.value as! [String : Any]? {
                     let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current })
                     let pokemon = Pokemon(JSON: json)
+                    pokemon!.id = Int16(id)
                     context.insert(pokemon!)
-                    store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!))
+                    try! context.save()
+                    print("PokemonInfoServices: Fetched and saved Pokemon id=\(pokemon!.id)")
+                    store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!)) // Update Selected
+                    store.dispatch(AppendPokemonInfoList(pokemon: pokemon!))       // Add to list
                 }
             })
             

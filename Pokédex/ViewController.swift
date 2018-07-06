@@ -18,16 +18,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         startPokedex()
         activityIndicator.startAnimating()
-        
     }
     
     func startPokedex() {
+        // Try and fetch PokemonId from CoreData
         let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
         var sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
         var pokedexList = try! context.fetch(fetchRequest)
         
+        // If not found in CoreData, fetch from API and save in CoreData
         if pokedexList.isEmpty {
             fetchPokedex {success in
                 if success {
@@ -40,12 +41,13 @@ class ViewController: UIViewController {
         print("Pokedex fetched from CoreData")
         store.dispatch(UpdateListAction(list: pokedexList))
         
+        // Try and fetch Pokemon Info from CoreData
         let listFetchRequest:NSFetchRequest<Pokemon> = Pokemon.fetchRequest()
         sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         listFetchRequest.sortDescriptors = [sortDescriptor]
         
         let pokedexInfoList = try! context.fetch(listFetchRequest)
-        store.dispatch(UpdatePokemonInfoList(list: pokedexInfoList))
+        store.dispatch(SetPokemonInfoList(list: pokedexInfoList))
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -53,11 +55,6 @@ class ViewController: UIViewController {
         let mainViewController = storyboard.instantiateViewController(withIdentifier: "PokedexListViewController") as! PokedexListViewController
         mainViewController.dataController = self.dataController
         present(mainViewController, animated: true, completion: nil)
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
 
