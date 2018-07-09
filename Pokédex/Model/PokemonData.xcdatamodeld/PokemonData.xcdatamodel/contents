@@ -7,9 +7,9 @@
         <attribute name="indexes" optional="YES" attributeType="Transformable" customClassName="[String: String]" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="text_entry" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="types" optional="YES" attributeType="Transformable" customClassName="[String]" syncable="YES"/>
         <attribute name="weight" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="pokemonId" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PokemonId" inverseName="pokemonInfo" inverseEntity="PokemonId" syncable="YES"/>
-        <relationship name="types" optional="YES" toMany="YES" minCount="1" maxCount="2" deletionRule="Nullify" destinationEntity="Type" inverseName="pokemons" inverseEntity="Type" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -26,13 +26,8 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="Type" representedClassName="Type" syncable="YES" codeGenerationType="class">
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="pokemons" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Pokemon" inverseName="types" inverseEntity="Pokemon" syncable="YES"/>
-    </entity>
     <elements>
         <element name="Pokemon" positionX="-324" positionY="72" width="128" height="180"/>
         <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="90"/>
-        <element name="Type" positionX="-11" positionY="116" width="128" height="73"/>
     </elements>
 </model>

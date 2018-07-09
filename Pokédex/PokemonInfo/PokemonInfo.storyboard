@@ -231,8 +231,30 @@
                                             <constraint firstItem="VdB-j8-yEH" firstAttribute="width" secondItem="9uc-3d-eht" secondAttribute="width" id="y6w-NU-u4R"/>
                                         </constraints>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="kSb-IA-EFR">
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kSb-IA-EFR">
                                         <rect key="frame" x="192.5" y="0.0" width="182.5" height="81"/>
+                                        <subviews>
+                                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hqF-Yt-85X">
+                                                <rect key="frame" x="0.0" y="0.0" width="182.5" height="81"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Type" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rny-Pb-Wzg" userLabel="Type Label">
+                                                        <rect key="frame" x="0.0" y="0.0" width="91.5" height="81"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="---" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dK5-V7-dRs" userLabel="Type Value Label">
+                                                        <rect key="frame" x="91.5" y="0.0" width="91" height="81"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="dK5-V7-dRs" firstAttribute="width" secondItem="Rny-Pb-Wzg" secondAttribute="width" id="1Q1-D3-Dt7"/>
+                                                </constraints>
+                                            </stackView>
+                                        </subviews>
                                     </stackView>
                                 </subviews>
                                 <constraints>
@@ -312,6 +334,7 @@
                         <outlet property="sinnohLabel" destination="3oz-EY-FhX" id="2l8-mf-Iku"/>
                         <outlet property="spriteImageView" destination="ygi-BD-TVy" id="YVA-hI-xYf"/>
                         <outlet property="textView" destination="KfA-lm-WYW" id="Vcq-N4-FRf"/>
+                        <outlet property="typeValueLabel" destination="dK5-V7-dRs" id="kB3-6B-0dd"/>
                         <outlet property="unovaIndex" destination="Zfj-on-S58" id="U9T-eD-Iwp"/>
                         <outlet property="unovaLabel" destination="pCL-QJ-hMO" id="vHa-94-20v"/>
                         <outlet property="weightValueLabel" destination="Hm9-Nz-s7W" id="vnC-NS-AHi"/>

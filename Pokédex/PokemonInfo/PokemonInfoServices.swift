@@ -10,6 +10,8 @@ import Foundation
 import Alamofire
 import ObjectMapper
 
+// Fetch info from pokemon/id and pokemon-species/id endpoints
+// Merges both json and creates Pokemon object
 func fetchPokemon(id: Int) {
     print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
     
@@ -39,13 +41,3 @@ func fetchPokemon(id: Int) {
     
 }
 
-/*
- if let json = response.result.value {
- let poke = Pokemon(JSON: json as! [String : Any])
- context.insert(poke!)
- try! context.save()
- fetchSprite(pokemonId: id, completion: {_ in
- completion(true)
- })
- }
- */

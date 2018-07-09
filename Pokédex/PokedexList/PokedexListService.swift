@@ -14,6 +14,7 @@ let pokedexSize:Int = 802
 let root:String = "http://pokeapi.co/api/v2/"
 let spritePath:URL = getDocumentsDirectory().appendingPathComponent("pokemon")
 
+// -- Fetch from pokemon/limit?=802
 // Um request cria todos os objetos PokemonId :D
 func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
     Alamofire.request((URL(string: root + "pokemon/?limit=" + String(pokedexSize)))!).responseJSON(completionHandler: { response in
@@ -27,7 +28,8 @@ func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
     })
 }
 
-// Salva nome e id em objeto PokemonId
+// -- Create and save PokemonId
+// Salva nome e id em objeto PokemonId TODO: mappable object
 func savePokemon(_ pokemonInfo:Dictionary<String,Any>) {
     let pokemon = PokemonId(context: context)
     pokemon.name = (pokemonInfo["name"] as? String)?.capitalized
@@ -38,33 +40,20 @@ func savePokemon(_ pokemonInfo:Dictionary<String,Any>) {
     print("Saving object PokemonId id=\(pokemon.id)")
 }
 
-// old
-func checkPokemon(id: Int) -> Bool {
-    let fetchRequest:NSFetchRequest<Pokemon> = Pokemon.fetchRequest()
-    fetchRequest.predicate = NSPredicate(format: "id == %d", id)
-    let fetchedResults = try? context.fetch(fetchRequest)
-    guard (fetchedResults?.isEmpty)! else {
-        print("Pokemon already in Coredata id=" + String(id))
-        return true
-    }
-    return false
-}
-
-// Fetch Sprite from API WORKING
+// -- Fetch Sprite from API
 func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
     
     // If file already exists
     let dirPath = getDocumentsDirectory().appendingPathComponent("pokemon")
     let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
     if FileManager.default.fileExists(atPath: filePath.relativePath) {
-        print("Pokemon Sprite already saved for id=" + String(pokemonId))
+        //print("Pokemon Sprite already saved for id=" + String(pokemonId))
         return
     }
     
     // Create Directory "pokemon"
     try! FileManager.default.createDirectory(atPath: dirPath.relativePath, withIntermediateDirectories: true)
-    
-    //let pokemonURL = URL(string: root + "pokemon/" + String(describing: index))!
+
     //placeholder
     let spritePath = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + String(pokemonId) + ".png"
     
@@ -75,8 +64,21 @@ func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
     
     // Save image locally
     try! pngImage?.write(to: filePath, options: .atomic)
-    print("Saving Sprite for id=" + String(pokemonId))
+    //print("Saving Sprite for id=" + String(pokemonId))
     completion(true)
+}
+
+//todo
+func fetchTypes(completion: @escaping (_ success: Bool) -> Void) {
+    Alamofire.request((URL(string: root + "type/"))!).responseJSON(completionHandler: { response in
+        if let json = response.result.value as! [String: Any]? {
+            let typesList = json["results"] as! NSArray
+            for typeItem in typesList  {
+                let typeDict = typeItem as! [String: String]
+            }
+            completion(true)
+        }
+    })
 }
 
 // HELPER

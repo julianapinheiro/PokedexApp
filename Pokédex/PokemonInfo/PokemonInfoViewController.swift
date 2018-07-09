@@ -27,8 +27,6 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var sinnohLabel: UILabel!
     @IBOutlet weak var unovaLabel: UILabel!
     @IBOutlet weak var kalosLabel: UILabel!
-    @IBOutlet weak var heightValueLabel: UILabel!
-    @IBOutlet weak var weightValueLabel: UILabel!
     
     // Pokedex numbers
     @IBOutlet weak var kantoIndex: UILabel!
@@ -37,6 +35,10 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var sinnohIndex: UILabel!
     @IBOutlet weak var unovaIndex: UILabel!
     @IBOutlet weak var kalosIndex: UILabel!
+    
+    @IBOutlet weak var heightValueLabel: UILabel!
+    @IBOutlet weak var weightValueLabel: UILabel!
+    @IBOutlet weak var typeValueLabel: UILabel!
     
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var evoBarView: UIView!
@@ -115,6 +117,16 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         
         heightValueLabel.text = String(describing: pokemon?.height).replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         weightValueLabel.text = String(describing: pokemon?.weight).replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
+        
+        let types:String
+        let type1:String = (pokemon?.types![0])!.capitalized
+        if pokemon.types!.count > 1 {
+            let type2:String = (pokemon?.types![1])!.capitalized
+            types = ("\(type1)/\(type2)")
+        } else {
+            types = ("\(type1)")
+        }
+        typeValueLabel.text = types.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
     }
     
     func getIndex(_ region: String) -> String {

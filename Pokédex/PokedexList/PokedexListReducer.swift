@@ -15,6 +15,8 @@ func pokedexListReducer(action: Action, state: PokedexListState?) -> PokedexList
     switch action {
     case let action as UpdateListAction:
         state.pokedexList = action.list
+    case let action as UpdateTypesListAction:
+        state.typesList = action.list
     default:
         break
     }

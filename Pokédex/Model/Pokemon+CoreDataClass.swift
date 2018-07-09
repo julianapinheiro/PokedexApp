@@ -55,6 +55,26 @@ public class Pokemon: NSManagedObject, Mappable {
         return color
     },  toJSON: { (value: String?) -> Any? in return "object to json not supported" })
     
+    let transformTypes = TransformOf<Array<String>, Any>(fromJSON: { (value: Any?) -> Array<String>? in
+        let types_entries = value as! Array<Dictionary<String, Any>>
+        let type_entry0 = types_entries[0] as Dictionary<String, Any>
+        if types_entries.count > 1 {
+            let type_entry1 = types_entries[1] as Dictionary<String, Any>
+            let type0:String
+            let type1:String
+            if type_entry0["slot"] as! Int == 1 {
+                type0 = ((type_entry0["type"] as! Dictionary<String, String>)["name"])!
+                type1 = ((type_entry1["type"] as! Dictionary<String, String>)["name"])!
+            } else {
+                type1 = ((type_entry0["type"] as! Dictionary<String, String>)["name"])!
+                type0 = ((type_entry1["type"] as! Dictionary<String, String>)["name"])!
+            }
+            return [type0, type1]
+        } else {
+            return [((type_entry0["type"] as! Dictionary<String, String>)["name"])!]
+        }
+    } ,  toJSON: { (value: Array<String>?) -> Any? in return "object to json not supported" })
+    
     public func mapping(map: Map) {
         id <- map["id"]
         name <- map["name"]
@@ -63,6 +83,7 @@ public class Pokemon: NSManagedObject, Mappable {
         color <- (map["color"], transformColor)
         text_entry <- (map["flavor_text_entries"], transformTextEntry)
         indexes <- (map["pokedex_numbers"], transformPokedexNumbers)
+        types <- (map["types"], transformTypes)
     }
 }
 

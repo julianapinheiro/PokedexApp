@@ -21,10 +21,4 @@ struct PokemonInfoState {
         self.selectedPokemon = nil
         self.pokemonInfoList = []
     }
-    
-    /*init ? (selectedPokemonId: PokemonId) {
-        self.selectedPokemonId = selectedPokemonId
-        self.selectedPokemon = nil
-        self.pokemonInfoList = []
-    }*/
 }

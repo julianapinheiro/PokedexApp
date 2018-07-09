@@ -23,8 +23,13 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     var dataController:DataController!
     
+    var pokedexList: [PokemonId]!
+    
     func newState(state: PokedexListState) {
-        tableView.reloadData()
+        if !store.state.pokedexListState.pokedexList.isEmpty {
+            self.pokedexList = store.state.pokedexListState.pokedexList
+            tableView.reloadData()
+        }
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -35,6 +40,8 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         store.subscribe(self) { state in
             state.select { state in (state.pokedexListState) }
         }
+        
+        self.pokedexList = store.state.pokedexListState.pokedexList
         
         // UI Setup
         let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
@@ -60,24 +67,21 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         return 80
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (store.state.pokedexListState.pokedexList.count == 0) {
             //tableView.reloadData()
         }
-        return store.state.pokedexListState.pokedexList.count
+        return self.pokedexList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokedexListTableCell")! as! PokedexListTableCell
-        let poke = store.state.pokedexListState.pokedexList[(indexPath as NSIndexPath).row]
+        let poke = self.pokedexList[(indexPath as NSIndexPath).row]
         
         // Fetch pokemon sprite (if not saved yet)
         fetchSprite(pokemonId: Int(poke.id)) { result in
-                tableView.reloadRows(at: [indexPath], with: .automatic)
+            //tableView.reloadRows(at: [indexPath], with: .automatic) // crashes iPhone 5s
+            cell.reloadInputViews() // doesn`t crash on 5s
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
@@ -91,7 +95,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
        if let indexPath = tableView.indexPathForSelectedRow {
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: store.state.pokedexListState.pokedexList[(indexPath as NSIndexPath).row]))
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: self.pokedexList[(indexPath as NSIndexPath).row]))
         }
     }
 }

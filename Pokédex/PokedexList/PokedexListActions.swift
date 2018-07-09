@@ -13,3 +13,6 @@ struct UpdateListAction: Action {
     let list: [PokemonId]
 }
 
+struct UpdateTypesListAction: Action {
+    let list: [String]
+}

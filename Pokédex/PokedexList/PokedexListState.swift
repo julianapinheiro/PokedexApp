@@ -11,12 +11,15 @@ import ReSwift
 
 struct PokedexListState {
     var pokedexList:[PokemonId]
+    var typesList:[String]
 
     init() {
         self.pokedexList = []
+        self.typesList = []
     }
     
-    init? (pokedexList: [PokemonId]) {
+    init? (pokedexList: [PokemonId], typesList: [String]) {
         self.pokedexList = pokedexList
+        self.typesList = typesList
     }
 }
