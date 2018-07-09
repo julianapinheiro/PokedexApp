@@ -21,6 +21,10 @@ class ViewController: UIViewController {
     }
     
     func startPokedex() {
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         // Try and fetch PokemonId from CoreData
         let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
         var sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
@@ -35,8 +39,11 @@ class ViewController: UIViewController {
                     print("Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdateListAction(list: pokedexList))
+                    self.loadNextView()
                 }
             }
+        } else {
+            loadNextView()
         }
         print("Pokedex fetched from CoreData")
         store.dispatch(UpdateListAction(list: pokedexList))
@@ -50,10 +57,9 @@ class ViewController: UIViewController {
         store.dispatch(SetPokemonInfoList(list: pokedexInfoList))
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    func loadNextView() {
         let storyboard = UIStoryboard(name: "PokedexList", bundle: nil)
         let mainViewController = storyboard.instantiateViewController(withIdentifier: "PokedexListViewController") as! PokedexListViewController
-        mainViewController.dataController = self.dataController
         present(mainViewController, animated: true, completion: nil)
     }
 

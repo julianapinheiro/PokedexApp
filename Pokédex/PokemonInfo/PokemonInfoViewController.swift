@@ -79,7 +79,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     func setupUI() {
         barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
         barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
-        navBar.tintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
+        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         view.addSubview(barView)
         
         navBar.topItem?.title = pokemonId.name

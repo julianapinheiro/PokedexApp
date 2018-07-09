@@ -21,18 +21,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var dataController:DataController!
-    
     var pokedexList: [PokemonId]!
-    
-    func newState(state: PokedexListState) {
-        if !store.state.pokedexListState.pokedexList.isEmpty {
-            self.pokedexList = store.state.pokedexListState.pokedexList
-            tableView.reloadData()
-        }
-    }
-    
-    typealias StoreSubscriberStateType = PokedexListState
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,7 +36,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
         barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         view.addSubview(barView)
-        navBar.tintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
+        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -58,6 +47,17 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         super.viewDidDisappear(animated)
         store.unsubscribe(self)
     }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - StoreSubscriber
+    func newState(state: PokedexListState) {
+        if !store.state.pokedexListState.pokedexList.isEmpty {
+            self.pokedexList = store.state.pokedexListState.pokedexList
+            tableView.reloadData()
+        }
+    }
+    
+    typealias StoreSubscriberStateType = PokedexListState
     
     // -------------------------------------------------------------------------
     // MARK: - Table view data source
