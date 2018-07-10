@@ -11,6 +11,7 @@ import ObjectMapper
 import CoreData
 
 let pokedexSize:Int = 802
+let typesSize:Int = 18
 let root:String = "http://pokeapi.co/api/v2/"
 let spritePath:URL = getDocumentsDirectory().appendingPathComponent("pokemon")
 
@@ -29,7 +30,7 @@ func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
 }
 
 // -- Create and save PokemonId
-// Salva nome e id em objeto PokemonId TODO: mappable object
+// TODO: mappable object
 func savePokemon(_ pokemonInfo:Dictionary<String,Any>) {
     let pokemon = PokemonId(context: context)
     pokemon.name = (pokemonInfo["name"] as? String)?.capitalized
@@ -37,7 +38,7 @@ func savePokemon(_ pokemonInfo:Dictionary<String,Any>) {
     pokemon.id = Int16((url?.pathComponents.last!)!)!
     context.insert(pokemon)
     try! context.save()
-    print("Saving object PokemonId id=\(pokemon.id)")
+    //print("Saving object PokemonId id=\(pokemon.id)")
 }
 
 // -- Fetch Sprite from API
@@ -68,14 +69,14 @@ func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
     completion(true)
 }
 
-//todo
-func fetchTypes(completion: @escaping (_ success: Bool) -> Void) {
-    Alamofire.request((URL(string: root + "type/"))!).responseJSON(completionHandler: { response in
+func fetchType(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
+    let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(id)).appendingPathComponent("/")
+    Alamofire.request(url!).responseJSON(completionHandler: { response in
         if let json = response.result.value as! [String: Any]? {
-            let typesList = json["results"] as! NSArray
-            for typeItem in typesList  {
-                let typeDict = typeItem as! [String: String]
-            }
+            let type = Type(JSON: json)
+            context.insert(type!)
+            try! context.save()
+            print("PokedexListServices: Fetched and saved Type name=\(type!.name!)")
             completion(true)
         }
     })

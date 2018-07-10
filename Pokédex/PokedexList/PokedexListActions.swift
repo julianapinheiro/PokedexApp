@@ -14,5 +14,13 @@ struct UpdateListAction: Action {
 }
 
 struct UpdateTypesListAction: Action {
-    let list: [String]
+    let list: [Type]
+}
+
+struct UpdateFilteredPokemon: Action {
+    let list: [PokemonId]
+}
+
+struct SetIsFiltering: Action {
+    let isFiltering: Bool
 }

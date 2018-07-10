@@ -112,7 +112,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         johtoIndex.text = getIndex("original-johto")
         hoennIndex.text = getIndex("hoenn")
         sinnohIndex.text = getIndex("sinnoh")
-        unovaIndex.text = getIndex("unova")
+        unovaIndex.text = getIndex("original-unova")
         kalosIndex.text = getIndex("kalos-central")
         
         heightValueLabel.text = String(describing: pokemon?.height).replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
