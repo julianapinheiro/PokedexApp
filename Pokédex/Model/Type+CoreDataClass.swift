@@ -23,7 +23,7 @@ public class Type: NSManagedObject, Mappable {
         super.init(entity: entity!, insertInto: context)
     }
     
-    // nope
+    // err
     let transformPokemonList = TransformOf<NSSet, Any>(fromJSON: { (value: Any?) -> NSSet? in
         let pokemonArray = value as! Array<Dictionary<String, Any>>
         var pokemonList:Array<PokemonId> = []

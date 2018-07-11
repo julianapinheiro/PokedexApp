@@ -22,7 +22,7 @@ func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoS
             
         } else {
             print("SelectPokemonIdAction: fetching pokemon from api")
-            fetchPokemon(id: Int(action.selectedPokemonId.id))
+            PokemonInfoServices.shared.fetchPokemon(id: Int(action.selectedPokemonId.id))
         }
         
     case let action as UpdatePokemonAction:

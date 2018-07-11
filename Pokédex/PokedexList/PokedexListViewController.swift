@@ -48,7 +48,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Pokemon"
-        searchController.searchBar.scopeButtonTitles = ["All", "Normal"]
+        searchController.searchBar.scopeButtonTitles = ["All", "Fire", "Water", "Grass"] //typesList.map( { $0.name! } )
         searchController.searchBar.delegate = self
         tableView.tableHeaderView = searchController.searchBar
         self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
@@ -114,13 +114,13 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         // Fetch pokemon sprite (if not saved yet)
-        fetchSprite(pokemonId: Int(poke.id)) { result in
+        PokedexListService.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
             //tableView.reloadRows(at: [indexPath], with: .automatic) // crashes iPhone 5s
             cell.reloadInputViews() // doesn`t crash on 5s
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
-        cell.spriteImageView?.image = UIImage(contentsOfFile: spritePath.appendingPathComponent(String(poke.id)).relativePath)
+        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
         
         return cell
     }

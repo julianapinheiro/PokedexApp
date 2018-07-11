@@ -83,7 +83,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         view.addSubview(barView)
         
         navBar.topItem?.title = pokemonId.name
-        spriteImageView.image = UIImage(contentsOfFile: spritePath.appendingPathComponent(String(pokemonId.id)).relativePath)
+        spriteImageView.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(pokemonId.id)).relativePath)
         
         if pokemon != nil {
             print("setup reload")

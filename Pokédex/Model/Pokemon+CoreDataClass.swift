@@ -74,6 +74,7 @@ public class Pokemon: NSManagedObject, Mappable {
             return [((type_entry0["type"] as! Dictionary<String, String>)["name"])!]
         }
     } ,  toJSON: { (value: Array<String>?) -> Any? in return "object to json not supported" })
+
     
     public func mapping(map: Map) {
         id <- map["id"]

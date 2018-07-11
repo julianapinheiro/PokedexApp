@@ -10,34 +10,38 @@ import Foundation
 import Alamofire
 import ObjectMapper
 
-// Fetch info from pokemon/id and pokemon-species/id endpoints
-// Merges both json and creates Pokemon object
-func fetchPokemon(id: Int) {
-    print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
+class PokemonInfoServices {
+    static let shared = PokemonInfoServices()
     
-    // Fetch pokemon/id
-    Alamofire.request((URL(string: root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
-        print("PokemonInfoServices: Did request")
-        if let pokemonJSON = response.result.value as! [String : Any]? {
-            
-            // Fetch pokemon-species/id
-            Alamofire.request((URL(string: root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
-                print("PokemonInfoServices: Did request species")
-                if let pokemonSpeciesJSON = response.result.value as! [String : Any]? {
-                    let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current })
-                    let pokemon = Pokemon(JSON: json)
-                    pokemon!.id = Int16(id)
-                    context.insert(pokemon!)
-                    try! context.save()
-                    print("PokemonInfoServices: Fetched and saved Pokemon id=\(pokemon!.id)")
-                    store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!)) // Update Selected
-                    store.dispatch(AppendPokemonInfoList(pokemon: pokemon!))       // Add to list
-                }
-            })
-            
-        }
+    // Fetch info from pokemon/id and pokemon-species/id endpoints
+    // Merges both json and creates Pokemon object
+    func fetchPokemon(id: Int) {
+        print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
         
-    })
-    
+        // Fetch pokemon/id
+        Alamofire.request((URL(string: PokedexListService.shared.root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
+            print("PokemonInfoServices: Did request")
+            if let pokemonJSON = response.result.value as! [String : Any]? {
+                
+                // Fetch pokemon-species/id
+                Alamofire.request((URL(string: PokedexListService.shared.root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
+                    print("PokemonInfoServices: Did request species")
+                    if let pokemonSpeciesJSON = response.result.value as! [String : Any]? {
+                        let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current })
+                        let pokemon = Pokemon(JSON: json)
+                        pokemon!.id = Int16(id)
+                        context.insert(pokemon!)
+                        try! context.save()
+                        print("PokemonInfoServices: Fetched and saved Pokemon id=\(pokemon!.id)")
+                        store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!)) // Update Selected
+                        store.dispatch(AppendPokemonInfoList(pokemon: pokemon!))       // Add to list
+                    }
+                })
+                
+            }
+            
+        })
+        
+    }
 }
 

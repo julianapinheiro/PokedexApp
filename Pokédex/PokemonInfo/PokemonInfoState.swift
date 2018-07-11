@@ -11,14 +11,12 @@ import ReSwift
 import CoreData
 
 struct PokemonInfoState {
-    var selectedPokemonId:PokemonId
+    var selectedPokemonId:PokemonId?
     var selectedPokemon:Pokemon?
     
     var pokemonInfoList: [Pokemon]
     
     init () {
-        self.selectedPokemonId = PokemonId()
-        self.selectedPokemon = nil
         self.pokemonInfoList = []
     }
 }

@@ -21,6 +21,3 @@ struct UpdateFilteredPokemon: Action {
     let list: [PokemonId]
 }
 
-struct SetIsFiltering: Action {
-    let isFiltering: Bool
-}
