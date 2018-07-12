@@ -1,5 +1,5 @@
 //
-//  PokedexListService.swift
+//  PokedexListServices.swift
 //  Pokédex
 //
 //  Created by Juliana on 29/06/18.
@@ -10,13 +10,13 @@ import Alamofire
 import ObjectMapper
 import CoreData
 
-class PokedexListService {
+class PokedexListServices {
     let pokedexSize:Int = 802
     let typesSize:Int = 18
     let root:String = "http://pokeapi.co/api/v2/"
-    let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
+    let spritePath:URL = PokedexListServices.getDocumentsDirectory().appendingPathComponent("pokemon")
     
-    static let shared = PokedexListService()
+    static let shared = PokedexListServices()
 
     // -------------------------------------------------------------------------
     // MARK: - Init Pokemon, PokemonId, Type Objects
@@ -28,6 +28,7 @@ class PokedexListService {
         listFetchRequest.sortDescriptors = [sortDescriptor]
         
         let pokedexInfoList = try! context.fetch(listFetchRequest)
+        print("PokedexListServices: fetched \(pokedexInfoList.count) Pokemon from CoreData")
         store.dispatch(SetPokemonInfoList(list: pokedexInfoList))
     }
     
@@ -115,7 +116,7 @@ class PokedexListService {
     func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
         
         // If file already exists
-        let dirPath = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
+        let dirPath = PokedexListServices.getDocumentsDirectory().appendingPathComponent("pokemon")
         let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
             //print("Pokemon Sprite already saved for id=" + String(pokemonId))
@@ -129,7 +130,13 @@ class PokedexListService {
         let spritePath = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + String(pokemonId) + ".png"
         
         // Fetch image from API
-        let data = try! Data(contentsOf: URL(string: spritePath)!)
+        let data:Data
+        do {
+            data = try Data(contentsOf: URL(string: spritePath)!)
+        } catch {
+            print("PokedexListServices: error fetching image")
+            return
+        }
         let image = UIImage(data: data, scale: UIScreen.main.scale)!
         let pngImage = UIImagePNGRepresentation(image)
         

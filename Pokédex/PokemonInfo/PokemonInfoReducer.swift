@@ -16,14 +16,7 @@ func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoS
         
     case let action as SelectPokemonIdAction:
         state.selectedPokemonId = action.selectedPokemonId
-        if let pokemon = state.pokemonInfoList.first(where: {$0.id == action.selectedPokemonId.id}) {
-            //print("SelectPokemonIdAction: fetching pokemon from state.list")
-            state.selectedPokemon = pokemon
-            
-        } else {
-            //print("SelectPokemonIdAction: fetching pokemon from api")
-            PokemonInfoServices.shared.fetchPokemon(id: Int(action.selectedPokemonId.id))
-        }
+        //PokemonInfoServices.shared.loadPokemon(Int(action.selectedPokemonId.id))
         
     case let action as UpdatePokemonAction:
         state.selectedPokemon = action.selectedPokemon
@@ -33,6 +26,9 @@ func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoS
     
     case let action as SetPokemonInfoList:
         state.pokemonInfoList = action.list
+        
+    case let action as SetFailedToFetch:
+        state.failedToFetch = action.failedToFetch
         
     default:
         break

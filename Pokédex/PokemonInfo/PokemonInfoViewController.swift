@@ -20,6 +20,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var spriteImageView: UIImageView!
     @IBOutlet weak var textView: UITextView!
     
+    
     // Labels
     @IBOutlet weak var kantoLabel: UILabel!
     @IBOutlet weak var johtoLabel: UILabel!
@@ -46,6 +47,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var evoBarView: UIView!
     var barView: UIView!
     
+    @IBOutlet weak var moreEvoStackView: UIStackView!
     @IBOutlet weak var firstFormImageView: UIImageView!
     @IBOutlet weak var secondFormImageView: UIImageView!
     @IBOutlet weak var thirdFormImageView: UIImageView!
@@ -56,6 +58,15 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         if state.selectedPokemon != nil {
             pokemon = state.selectedPokemon
             reloadUI()
+        }
+        if state.failedToFetch {
+            loadingIndicator.isHidden = true
+            let alert = UIAlertController(title: "Alert", message: "Failed to fetch Pokémon Info from API", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                alert.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
+                }))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
@@ -72,7 +83,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         pokemonId = store.state.pokemonInfoState.selectedPokemonId
         pokemon = store.state.pokemonInfoState.selectedPokemon
         setupUI()
-        //reloadUI()
+        PokemonInfoServices.shared.loadPokemon(Int(pokemonId.id))
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -90,7 +101,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         view.addSubview(barView)
         
         navBar.topItem?.title = pokemonId.name
-        spriteImageView.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(pokemonId.id)).relativePath)
+        spriteImageView.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(pokemonId.id)).relativePath)
         
         if pokemon != nil {
             loadingIndicator.isHidden = true
@@ -126,11 +137,14 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             label?.textColor = getUIColor(color)
         }
         
-        // Set Info
         heightValueLabel.text = String(describing: pokemon!.height)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         weightValueLabel.text = String(describing: pokemon!.weight)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         
         let types:String
+        /* todo:
+         let typesAr:Array<PokemonId> = Array((pokemon.pokemonId?.types)!) as! Array<PokemonId>
+         let type1:String = typesAr[0].name!
+         */
         let type1:String = (pokemon?.types![0])!.capitalized
         if pokemon.types!.count > 1 {
             let type2:String = (pokemon?.types![1])!.capitalized
@@ -140,14 +154,33 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         }
         typeValueLabel.text = types.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         
-        // Set Evo Images
-        let formImageViews = [firstFormImageView, secondFormImageView, thirdFormImageView]
-        var index = 0
-        for formId in pokemon.evolutionChain! {
-            PokedexListService.shared.fetchSprite(pokemonId: Int(formId)) { result in
-                formImageViews[index]?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(formId)).relativePath)
+        // evoluções was a mistake
+        if pokemon.evolutionChain != nil {
+            let formImageViews = [firstFormImageView, secondFormImageView, thirdFormImageView]
+            var index = 0
+            for formId in pokemon.evolutionChain! {
+                PokedexListServices.shared.fetchSprite(pokemonId: Int(formId)) { result in
+                    formImageViews[index]?.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(formId)).relativePath)
+                }
+                index += 1
+                if index > 2 {
+                    break
+                }
             }
-            index += 1
+            if pokemon.evolutionChain!.count > 3 {
+                var extraEvo = pokemon.evolutionChain!
+                extraEvo.removeSubrange(0...2)
+                let count = extraEvo.underestimatedCount
+                var extraImages = Array(repeating: UIImageView(), count: count)
+                for index in 0...count - 1 {
+                    PokedexListServices.shared.fetchSprite(pokemonId: Int(extraEvo[index])) { result in
+                        extraImages[index] = UIImageView(image: UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(extraEvo[index])).relativePath))
+                    }
+                }
+                for image in extraImages {
+                    moreEvoStackView.addArrangedSubview(image)
+                }
+            }
         }
     }
     
@@ -232,5 +265,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             return UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         }
     }
+
+    
     
 }

@@ -107,16 +107,16 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         }
 
         // Fetch pokemon sprite
-        PokedexListService.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
+        PokedexListServices.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
             if result {
                 cell.reloadInputViews()
             } else {
-                cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+                cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
             }
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
-        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
         
         return cell
     }

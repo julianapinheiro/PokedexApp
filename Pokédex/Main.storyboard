@@ -30,9 +30,17 @@
                                     <constraint firstAttribute="height" constant="50" id="e1G-gS-18Q"/>
                                 </constraints>
                             </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIk-eW-tWh">
+                                <rect key="frame" x="98" y="371" width="178" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.23137254900000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="AIk-eW-tWh" firstAttribute="centerX" secondItem="aBv-ii-HjT" secondAttribute="centerX" id="3wP-2L-25D"/>
+                            <constraint firstItem="AIk-eW-tWh" firstAttribute="top" secondItem="7hf-bc-uZY" secondAttribute="bottom" constant="2.5" id="8Ya-dG-Cfy"/>
                             <constraint firstItem="7hf-bc-uZY" firstAttribute="centerX" secondItem="aBv-ii-HjT" secondAttribute="centerX" id="fKq-SK-RIj"/>
                             <constraint firstItem="7hf-bc-uZY" firstAttribute="centerY" secondItem="aBv-ii-HjT" secondAttribute="centerY" id="zdl-EE-Tw1"/>
                         </constraints>
@@ -40,6 +48,7 @@
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="7hf-bc-uZY" id="lE3-cg-qVa"/>
+                        <outlet property="loadingLabel" destination="AIk-eW-tWh" id="w5n-Q2-OrV"/>
                         <segue destination="INm-FI-ZOX" kind="presentation" id="gzT-wi-qZa"/>
                     </connections>
                 </viewController>
