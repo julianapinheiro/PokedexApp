@@ -17,6 +17,8 @@ func pokedexListReducer(action: Action, state: PokedexListState?) -> PokedexList
         state.pokedexList = action.list
     case let action as UpdateTypesListAction:
         state.typesList = action.list
+    case let action as UpdateGenListAction:
+        state.genList = action.list
     case let action as UpdateFilteredPokemon:
         state.filteredPokedexList = action.list
     case let action as SetTypeScope:

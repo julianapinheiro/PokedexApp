@@ -14,6 +14,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     var typesList = [Type?]()
+    var genList = [Generation?]()
     var selectedType: Type? = nil
     
     override func viewDidLoad() {
@@ -45,6 +46,11 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
             self.typesList.insert(nil, at: 0)
             self.tableView.reloadData()
         }
+        if !store.state.pokedexListState.genList.isEmpty {
+            self.genList = store.state.pokedexListState.genList
+            self.genList.insert(nil, at: 0)
+            self.tableView.reloadData()
+        }
         self.selectedType = store.state.pokedexListState.typeScope
     }
     
@@ -55,21 +61,64 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
 
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return typesList.count
+        switch section
+        {
+        case 0:
+            return typesList.count
+        case 1:
+            return genList.count
+        default:
+            return 0
+        }
+    }
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView,titleForHeaderInSection section: Int) -> String?
+    {
+        switch section
+        {
+        case 0:
+            return "By Type"
+        case 1:
+            return "By Generation"
+        default:
+            return ""
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SortTableViewCell")!
-        if typesList[indexPath.row] == nil {
-            cell.textLabel?.text = "All"
-        } else {
-            cell.textLabel?.text = typesList[indexPath.row]!.name?.capitalized
+        switch (indexPath.section)
+        {
+            case 0:
+                if typesList[indexPath.row] == nil {
+                    cell.textLabel?.text = "All"
+                } else {
+                    cell.textLabel?.text = typesList[indexPath.row]!.name?.capitalized
+                }
+                if typesList[indexPath.row] == selectedType {
+                    cell.accessoryType = UITableViewCellAccessoryType.checkmark
+                } else {
+                    cell.accessoryType = UITableViewCellAccessoryType.none
+                }
+            case 1:
+                if genList[indexPath.row] == nil {
+                    cell.textLabel?.text = "All"
+                } else {
+                    cell.textLabel?.text = genList[indexPath.row]!.name?.capitalized.replacingOccurrences(of: "-", with: " ")
+                }
+                /*if typesList[indexPath.row] == selectedType {
+                    cell.accessoryType = UITableViewCellAccessoryType.checkmark
+                } else {
+                    cell.accessoryType = UITableViewCellAccessoryType.none
+                }*/
+            default:
+                cell.textLabel?.text = ""
         }
-        if typesList[indexPath.row] == selectedType {
-            cell.accessoryType = UITableViewCellAccessoryType.checkmark
-        } else {
-            cell.accessoryType = UITableViewCellAccessoryType.none
-        }
+        
         return cell
     }
     

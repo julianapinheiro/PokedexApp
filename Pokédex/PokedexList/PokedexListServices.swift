@@ -13,6 +13,7 @@ import CoreData
 class PokedexListServices {
     let pokedexSize:Int = 802
     let typesSize:Int = 18
+    let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
     let spritePath:URL = PokedexListServices.getDocumentsDirectory().appendingPathComponent("pokemon")
     
@@ -55,6 +56,33 @@ class PokedexListServices {
         } else {
             print("PokedexListServices: Types fetched from CoreData")
             store.dispatch(UpdateTypesListAction(list: typesList))
+            completion(true)
+        }
+    }
+    
+    func startGenerations(completion: @escaping (_ success: Bool) -> Void) {
+        // Try and fetch Generations from CoreData
+        let fetchRequest:NSFetchRequest<Generation> = Generation.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        var genList = try! context.fetch(fetchRequest)
+        
+        // If not found in CoreData, fetch from API and save in CoreData
+        if genList.count < gensSize {
+            fetchGenerations(1, completion: { success in
+                if success {
+                    print("PokedexListServices: Generations fetched from API")
+                    genList = try! context.fetch(fetchRequest)
+                    store.dispatch(UpdateGenListAction(list: genList))
+                    completion(true)
+                } else {
+                    print("PokedexListServices: Error fetching generations from API")
+                    completion(true)
+                }
+            })
+        } else {
+            print("PokedexListServices: Generations fetched from CoreData")
+            store.dispatch(UpdateGenListAction(list: genList))
             completion(true)
         }
     }
@@ -146,7 +174,7 @@ class PokedexListServices {
         completion(true)
     }
     
-    var index = 1
+    private var typeIndex = 1
     
     func fetchTypes(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
         let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(id)).appendingPathComponent("/")
@@ -161,15 +189,45 @@ class PokedexListServices {
                 context.insert(type!)
                 try! context.save()
                 //print("PokedexListServices: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
-                if self.index < self.typesSize {
-                    self.index += 1
-                    self.fetchTypes(self.index, completion: { success in
+                if self.typeIndex < self.typesSize {
+                    self.typeIndex += 1
+                    self.fetchTypes(self.typeIndex, completion: { success in
                         if success {
                             completion(true)
                         }
                     })
                 } else {
                     //print("PokedexListServices: fetched all types from API")
+                    completion(true)
+                }
+            }
+        })
+    }
+    
+    private var genIndex = 1
+    
+    func fetchGenerations(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
+        let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(id)).appendingPathComponent("/")
+        Alamofire.request(url!).responseJSON(completionHandler: { response in
+            if (response.result.error != nil) {
+                print(response.result.error!)
+                completion(false)
+                return
+            }
+            if let json = response.result.value as! [String: Any]? {
+                let gen = Generation(JSON: json)
+                context.insert(gen!)
+                try! context.save()
+                //print("PokedexListServices: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
+                if self.genIndex < self.gensSize {
+                    self.genIndex += 1
+                    self.fetchGenerations(self.genIndex, completion: { success in
+                        if success {
+                            completion(true)
+                        }
+                    })
+                } else {
+                    //print("PokedexListServices: fetched all generation from API")
                     completion(true)
                 }
             }

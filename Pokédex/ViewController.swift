@@ -31,7 +31,12 @@ class ViewController: UIViewController {
                 self.loadingLabel.text = "Fetching Types..."
                 self.pokedexListServices.startTypes(completion: { success in
                     if success {
-                        self.loadNextView()
+                        self.loadingLabel.text = "Fetching Generations..."
+                        self.pokedexListServices.startGenerations(completion: { success in
+                            if success {
+                                self.loadNextView()
+                            }
+                        })
                     }
                 })
             }

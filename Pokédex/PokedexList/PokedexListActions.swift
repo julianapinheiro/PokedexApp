@@ -17,6 +17,10 @@ struct UpdateTypesListAction: Action {
     let list: [Type]
 }
 
+struct UpdateGenListAction: Action {
+    let list: [Generation]
+}
+
 struct UpdateFilteredPokemon: Action {
     let list: [PokemonId]
 }
