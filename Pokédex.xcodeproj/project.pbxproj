@@ -16,6 +16,8 @@
 		B91A04FD20ED650900B0DAB2 /* PokemonInfoActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91A04FC20ED650900B0DAB2 /* PokemonInfoActions.swift */; };
 		B93BA22220EE8E1000C853FF /* Pokemon+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BA22020EE8E1000C853FF /* Pokemon+CoreDataClass.swift */; };
 		B93BA22320EE8E1000C853FF /* Pokemon+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93BA22120EE8E1000C853FF /* Pokemon+CoreDataProperties.swift */; };
+		B9519A3720F79B0E003BECF2 /* SortViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9519A3620F79B0E003BECF2 /* SortViewController.swift */; };
+		B9519A3920F79B88003BECF2 /* SortStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B9519A3820F79B88003BECF2 /* SortStoryboard.storyboard */; };
 		B952623E20F4D7C000A091AF /* Type+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = B952623C20F4D7C000A091AF /* Type+CoreDataClass.swift */; };
 		B952623F20F4D7C000A091AF /* Type+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = B952623D20F4D7C000A091AF /* Type+CoreDataProperties.swift */; };
 		B954C86220E6B62C00A4BD17 /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B954C86120E6B62C00A4BD17 /* AppReducer.swift */; };
@@ -49,6 +51,8 @@
 		B91A04FC20ED650900B0DAB2 /* PokemonInfoActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonInfoActions.swift; sourceTree = "<group>"; };
 		B93BA22020EE8E1000C853FF /* Pokemon+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pokemon+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B93BA22120EE8E1000C853FF /* Pokemon+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pokemon+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		B9519A3620F79B0E003BECF2 /* SortViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortViewController.swift; sourceTree = "<group>"; };
+		B9519A3820F79B88003BECF2 /* SortStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SortStoryboard.storyboard; sourceTree = "<group>"; };
 		B952623C20F4D7C000A091AF /* Type+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Type+CoreDataClass.swift"; sourceTree = "<group>"; };
 		B952623D20F4D7C000A091AF /* Type+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Type+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B954C86120E6B62C00A4BD17 /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
@@ -123,6 +127,8 @@
 				B954C87220E6B81100A4BD17 /* PokedexListService.swift */,
 				B954C87420E6B82A00A4BD17 /* PokedexListViewController.swift */,
 				B99D49A420E6BE3400F10AF1 /* PokedexList.storyboard */,
+				B9519A3620F79B0E003BECF2 /* SortViewController.swift */,
+				B9519A3820F79B88003BECF2 /* SortStoryboard.storyboard */,
 			);
 			path = PokedexList;
 			sourceTree = "<group>";
@@ -213,6 +219,7 @@
 				TargetAttributes = {
 					B9BB64D920E3C85E004D901D = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 0920;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -241,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9BB64E820E3C85E004D901D /* LaunchScreen.storyboard in Resources */,
+				B9519A3920F79B88003BECF2 /* SortStoryboard.storyboard in Resources */,
 				B99D49A520E6BE3400F10AF1 /* PokedexList.storyboard in Resources */,
 				B91A04F320ED649800B0DAB2 /* PokemonInfo.storyboard in Resources */,
 				B9BB64E520E3C85E004D901D /* Assets.xcassets in Resources */,
@@ -317,6 +325,7 @@
 			files = (
 				B91A04F720ED64D500B0DAB2 /* PokemonInfoServices.swift in Sources */,
 				B97A8E5D20EB9233007E0EBC /* DataController.swift in Sources */,
+				B9519A3720F79B0E003BECF2 /* SortViewController.swift in Sources */,
 				B952623E20F4D7C000A091AF /* Type+CoreDataClass.swift in Sources */,
 				B954C86220E6B62C00A4BD17 /* AppReducer.swift in Sources */,
 				B9BB64E020E3C85E004D901D /* ViewController.swift in Sources */,
@@ -466,6 +475,7 @@
 			baseConfigurationReference = A194CD76F9EFC448C14DA28F /* Pods-Pokédex.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GHJ6VHFXSU;
 				INFOPLIST_FILE = "Pokédex/Info.plist";
@@ -473,6 +483,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.bridge.Poke-dex";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -483,6 +494,7 @@
 			baseConfigurationReference = 1D0D16D3DF43D9B4774A3A3B /* Pods-Pokédex.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = GHJ6VHFXSU;
 				INFOPLIST_FILE = "Pokédex/Info.plist";

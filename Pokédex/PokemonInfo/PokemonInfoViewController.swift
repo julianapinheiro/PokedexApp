@@ -80,6 +80,9 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         store.unsubscribe(self)
     }
     
+    // -------------------------------------------------------------------------
+    // MARK: - Set up UI functions
+    
     func setupUI() {
         barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
         barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
@@ -123,6 +126,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             label?.textColor = getUIColor(color)
         }
         
+        // Set Info
         heightValueLabel.text = String(describing: pokemon!.height)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         weightValueLabel.text = String(describing: pokemon!.weight)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         
@@ -136,6 +140,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         }
         typeValueLabel.text = types.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         
+        // Set Evo Images
         let formImageViews = [firstFormImageView, secondFormImageView, thirdFormImageView]
         var index = 0
         for formId in pokemon.evolutionChain! {
@@ -146,13 +151,17 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         }
     }
     
-    /*@IBAction func firstFormPressed(_ sender: Any) {
+    // -------------------------------------------------------------------------
+    // MARK: - IBActions
+    
+    @IBAction func firstFormPressed(_ sender: Any) {
         if pokemon.evolutionChain?.count == 1 {
             return
         } else if pokemon.evolutionChain![0] == pokemon.id {
             return
         } else {
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![0]))
+            let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![0]} )
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
     }
@@ -160,10 +169,11 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBAction func secondFormPressed(_ sender: Any) {
         if pokemon.evolutionChain?.count == 1 {
             return
-        } else if pokemon.evolutionChain[1] == pokemon.id {
+        } else if pokemon.evolutionChain![1] == pokemon.id {
             return
         } else {
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![1]))
+            let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![1]} )
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
     }
@@ -171,13 +181,22 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBAction func thirdFormPressed(_ sender: Any) {
         if pokemon.evolutionChain?.count == 1 {
             return
-        } else if pokemon.evolutionChain[2] == pokemon.id {
+        } else if pokemon.evolutionChain![2] == pokemon.id {
             return
         } else {
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![2]))
+            let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![2]} )
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
-    }*/
+    }
+    
+    @IBAction func back(_ sender: Any) {
+        store.dispatch(UpdatePokemonAction(selectedPokemon: nil))
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - Helper functions
     
     func getIndex(_ region: String) -> String {
         if let index = pokemon?.indexes?[region] {
@@ -190,33 +209,28 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     func getUIColor(_ color: String) -> UIColor {
         switch color {
         case "black":
-            return UIColor(red:0.18, green:0.20, blue:0.21, alpha:1.0) //UIColor(red:0.78, green:0.78, blue:0.78, alpha:1.0)
+            return UIColor(red:0.18, green:0.20, blue:0.21, alpha:1.0)
         case "blue":
-            return UIColor(red:0.20, green:0.60, blue:0.86, alpha:1.0) //UIColor(red:0.78, green:0.78, blue:0.98, alpha:1.0)
+            return UIColor(red:0.20, green:0.60, blue:0.86, alpha:1.0)
         case "brown":
-            return UIColor(red:0.53, green:0.40, blue:0.40, alpha:1.0) //UIColor(red:0.92, green:0.85, blue:0.78, alpha:1.0)
+            return UIColor(red:0.53, green:0.40, blue:0.40, alpha:1.0)
         case "gray":
-            return UIColor(red:0.50, green:0.55, blue:0.55, alpha:1.0) //UIColor(red:0.87, green:0.87, blue:0.87, alpha:1.0)
+            return UIColor(red:0.50, green:0.55, blue:0.55, alpha:1.0)
         case "green":
-            return UIColor(red:0.15, green:0.68, blue:0.38, alpha:1.0) //UIColor(red:0.78, green:0.98, blue:0.78, alpha:1.0)
+            return UIColor(red:0.15, green:0.68, blue:0.38, alpha:1.0)
         case "pink":
-            return UIColor(red:0.99, green:0.47, blue:0.66, alpha:1.0) //UIColor(red:0.98, green:0.82, blue:0.98, alpha:1.0)
+            return UIColor(red:0.99, green:0.47, blue:0.66, alpha:1.0)
         case "purple":
-            return UIColor(red:0.61, green:0.35, blue:0.71, alpha:1.0) //UIColor(red:0.93, green:0.78, blue:0.93, alpha:1.0)
+            return UIColor(red:0.61, green:0.35, blue:0.71, alpha:1.0)
         case "red":
-            return UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0) //UIColor(red:0.98, green:0.78, blue:0.78, alpha:1.0)
+            return UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         case "white":
-            return UIColor(red:0.93, green:0.94, blue:0.95, alpha:1.0) //UIColor(red:0.92, green:0.92, blue:0.92, alpha:1.0)
+            return UIColor(red:0.93, green:0.94, blue:0.95, alpha:1.0)
         case "yellow":
-            return UIColor(red:0.95, green:0.77, blue:0.06, alpha:1.0) //UIColor(red:0.98, green:0.98, blue:0.78, alpha:1.0)
+            return UIColor(red:0.95, green:0.77, blue:0.06, alpha:1.0)
         default:
-            return UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0) //UIColor(red:0.98, green:0.78, blue:0.78, alpha:1.0)
+            return UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         }
-    }
-    
-    @IBAction func back(_ sender: Any) {
-        store.dispatch(UpdatePokemonAction(selectedPokemon: nil))
-        self.dismiss(animated: true, completion: nil)
     }
     
 }

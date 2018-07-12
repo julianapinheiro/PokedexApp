@@ -13,10 +13,14 @@ struct PokedexListState {
     var pokedexList:[PokemonId]
     var typesList:[Type]
     var filteredPokedexList:[PokemonId]
+    var typeScope:Type?
+    var isFiltering:Bool
 
     init() {
         self.pokedexList = []
         self.typesList = []
         self.filteredPokedexList = []
+        self.typeScope = nil
+        self.isFiltering = false
     }
 }

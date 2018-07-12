@@ -18,7 +18,7 @@
         </uniquenessConstraints>
     </entity>
     <entity name="PokemonId" representedClassName="PokemonId" syncable="YES">
-        <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="pokemonInfo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pokemon" inverseName="pokemonId" inverseEntity="Pokemon" syncable="YES"/>
         <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Type" inverseName="pokemonList" inverseEntity="Type" syncable="YES"/>
@@ -39,8 +39,8 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="193"/>
-        <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="105"/>
+        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="195"/>
+        <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="103"/>
         <element name="Type" positionX="54" positionY="153" width="128" height="90"/>
     </elements>
 </model>

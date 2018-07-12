@@ -2,7 +2,7 @@
 //  PokemonId+CoreDataProperties.swift
 //  Pokédex
 //
-//  Created by Juliana on 11/07/18.
+//  Created by Juliana on 12/07/18.
 //  Copyright © 2018 Bridge. All rights reserved.
 //
 //

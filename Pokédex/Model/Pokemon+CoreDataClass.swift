@@ -107,6 +107,7 @@ public class Pokemon: NSManagedObject, Mappable {
                 }
            }
         }
+        print(chain)
         return chain
     },  toJSON: { (value: [Int16]?) -> Any? in return "object to json not supported" })
     

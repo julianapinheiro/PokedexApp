@@ -23,16 +23,12 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     let searchController = UISearchController(searchResultsController: nil)
     
-    var pokedexList: [PokemonId]!
-    var typesList: [Type]!
-    
+    var pokedexList = [PokemonId]()
+    var typesList = [Type]()
     var filteredPokedexList = [PokemonId]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.pokedexList = store.state.pokedexListState.pokedexList
-        self.typesList = store.state.pokedexListState.typesList
         
         // UI Setup
         let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
@@ -47,9 +43,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         // Setup the Search Controller
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Pokemon"
-        searchController.searchBar.scopeButtonTitles = ["All", "Fire", "Water", "Grass"] //typesList.map( { $0.name! } )
-        searchController.searchBar.delegate = self
+        searchController.searchBar.placeholder = "Search Pokemon by name"
         tableView.tableHeaderView = searchController.searchBar
         self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
         definesPresentationContext = true
@@ -90,8 +84,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     // -------------------------------------------------------------------------
     // MARK: - Table view data source
-    
-    // errr
+
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 80
     }
@@ -105,25 +98,25 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokedexListTableCell")! as! PokedexListTableCell
-        //let poke = self.pokedexList[(indexPath as NSIndexPath).row]
+
         let poke: PokemonId
         if isFiltering() {
             poke = filteredPokedexList[indexPath.row]
         } else {
             poke = pokedexList[indexPath.row]
         }
-        
+
         // Fetch pokemon sprite
         PokedexListService.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
             if result {
-                cell.reloadInputViews() // doesn`t crash on 5s
+                cell.reloadInputViews()
             } else {
                 cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
             }
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
-        //cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
         
         return cell
     }
@@ -132,8 +125,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Private instance methods
     
     func isFiltering() -> Bool {
-        let searchBarScopeIsFiltering = searchController.searchBar.selectedScopeButtonIndex != 0
-        return searchController.isActive && (!searchBarIsEmpty() || searchBarScopeIsFiltering)
+        return (searchController.isActive && !searchBarIsEmpty()) || store.state.pokedexListState.isFiltering
     }
     
     func searchBarIsEmpty() -> Bool {
@@ -141,30 +133,9 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
-    /*func filterContentForSearchText(_ searchText: String, scope: String = "All") {
+    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         let filteredPokemon = pokedexList.filter({( pokemon : PokemonId) -> Bool in
             return (pokemon.name?.lowercased().contains(searchText.lowercased()))!
-        })
-        store.dispatch(UpdateFilteredPokemon(list: filteredPokemon))
-    }*/
-    
-    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        let type:Type?
-        if scope != "All" && !typesList.isEmpty {
-            type = typesList.first(where: { $0.name == scope.lowercased() })!
-        } else {
-            type = nil
-        }
-        let filteredPokemon = pokedexList.filter({( pokemon : PokemonId) -> Bool in
-            var doesCategoryMatch = (scope == "All")
-            if type != nil {
-                doesCategoryMatch = doesCategoryMatch || (type!.pokemonList?.contains(pokemon))!
-            }
-            if searchBarIsEmpty() {
-                return doesCategoryMatch
-            } else {
-                return doesCategoryMatch && pokemon.name!.lowercased().contains(searchText.lowercased())
-            }
         })
         store.dispatch(UpdateFilteredPokemon(list: filteredPokemon))
     }
@@ -174,7 +145,6 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
        if let indexPath = tableView.indexPathForSelectedRow {
-            //store.dispatch(SelectPokemonIdAction(selectedPokemonId: self.pokedexList[(indexPath as NSIndexPath).row]))
             let poke: PokemonId
             if isFiltering() {
                 poke = filteredPokedexList[(indexPath as NSIndexPath).row]
@@ -192,16 +162,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
 extension PokedexListViewController: UISearchResultsUpdating {
     // MARK: - UISearchResultsUpdating Delegate
     func updateSearchResults(for searchController: UISearchController) {
-        let searchBar = searchController.searchBar
-        let scope = searchBar.scopeButtonTitles![searchBar.selectedScopeButtonIndex]
-        filterContentForSearchText(searchController.searchBar.text!, scope: scope)
-    }
-}
-
-extension PokedexListViewController: UISearchBarDelegate {
-    // MARK: - UISearchBar Delegate
-    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        filterContentForSearchText(searchBar.text!, scope: searchBar.scopeButtonTitles![selectedScope])
+        filterContentForSearchText(searchController.searchBar.text!)
     }
 }
 

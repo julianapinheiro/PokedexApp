@@ -21,3 +21,8 @@ struct UpdateFilteredPokemon: Action {
     let list: [PokemonId]
 }
 
+struct SetTypeScope: Action {
+    let scope: Type?
+}
+
+
