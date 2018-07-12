@@ -113,14 +113,17 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
             poke = pokedexList[indexPath.row]
         }
         
-        // Fetch pokemon sprite (if not saved yet)
+        // Fetch pokemon sprite
         PokedexListService.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
-            //tableView.reloadRows(at: [indexPath], with: .automatic) // crashes iPhone 5s
-            cell.reloadInputViews() // doesn`t crash on 5s
+            if result {
+                cell.reloadInputViews() // doesn`t crash on 5s
+            } else {
+                cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+            }
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
-        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+        //cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
         
         return cell
     }
@@ -146,16 +149,16 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     }*/
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        let type:Type
-        if scope != "All" {
+        let type:Type?
+        if scope != "All" && !typesList.isEmpty {
             type = typesList.first(where: { $0.name == scope.lowercased() })!
         } else {
-            type = Type()
+            type = nil
         }
         let filteredPokemon = pokedexList.filter({( pokemon : PokemonId) -> Bool in
             var doesCategoryMatch = (scope == "All")
-            if type != Type() {
-                doesCategoryMatch = doesCategoryMatch || (type.pokemonList?.contains(pokemon))!
+            if type != nil {
+                doesCategoryMatch = doesCategoryMatch || (type!.pokemonList?.contains(pokemon))!
             }
             if searchBarIsEmpty() {
                 return doesCategoryMatch

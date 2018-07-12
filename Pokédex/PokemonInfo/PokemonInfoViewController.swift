@@ -27,6 +27,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var sinnohLabel: UILabel!
     @IBOutlet weak var unovaLabel: UILabel!
     @IBOutlet weak var kalosLabel: UILabel!
+    @IBOutlet weak var nationalLabel: UILabel!
     
     // Pokedex numbers
     @IBOutlet weak var kantoIndex: UILabel!
@@ -35,6 +36,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var sinnohIndex: UILabel!
     @IBOutlet weak var unovaIndex: UILabel!
     @IBOutlet weak var kalosIndex: UILabel!
+    @IBOutlet weak var nationalIndex: UILabel!
     
     @IBOutlet weak var heightValueLabel: UILabel!
     @IBOutlet weak var weightValueLabel: UILabel!
@@ -44,12 +46,14 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     @IBOutlet weak var evoBarView: UIView!
     var barView: UIView!
     
+    @IBOutlet weak var firstFormImageView: UIImageView!
+    @IBOutlet weak var secondFormImageView: UIImageView!
+    @IBOutlet weak var thirdFormImageView: UIImageView!
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
     typealias StoreSubscriberStateType = PokemonInfoState
     func newState(state: PokemonInfoState) {
         if state.selectedPokemon != nil {
-            print("new state reload")
             pokemon = state.selectedPokemon
             reloadUI()
         }
@@ -86,7 +90,6 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         spriteImageView.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(pokemonId.id)).relativePath)
         
         if pokemon != nil {
-            print("setup reload")
             loadingIndicator.isHidden = true
             reloadUI()
         } else {
@@ -114,9 +117,14 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         sinnohIndex.text = getIndex("sinnoh")
         unovaIndex.text = getIndex("original-unova")
         kalosIndex.text = getIndex("kalos-central")
+        nationalIndex.text = String(pokemon.id)
         
-        heightValueLabel.text = String(describing: pokemon?.height).replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
-        weightValueLabel.text = String(describing: pokemon?.weight).replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
+        for label in [kantoLabel, johtoLabel, hoennLabel, sinnohLabel, unovaLabel, kalosLabel, nationalLabel] {
+            label?.textColor = getUIColor(color)
+        }
+        
+        heightValueLabel.text = String(describing: pokemon!.height)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
+        weightValueLabel.text = String(describing: pokemon!.weight)//.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
         
         let types:String
         let type1:String = (pokemon?.types![0])!.capitalized
@@ -127,7 +135,49 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             types = ("\(type1)")
         }
         typeValueLabel.text = types.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
+        
+        let formImageViews = [firstFormImageView, secondFormImageView, thirdFormImageView]
+        var index = 0
+        for formId in pokemon.evolutionChain! {
+            PokedexListService.shared.fetchSprite(pokemonId: Int(formId)) { result in
+                formImageViews[index]?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(formId)).relativePath)
+            }
+            index += 1
+        }
     }
+    
+    /*@IBAction func firstFormPressed(_ sender: Any) {
+        if pokemon.evolutionChain?.count == 1 {
+            return
+        } else if pokemon.evolutionChain![0] == pokemon.id {
+            return
+        } else {
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![0]))
+            performSegue(withIdentifier: "showForm", sender: nil)
+        }
+    }
+    
+    @IBAction func secondFormPressed(_ sender: Any) {
+        if pokemon.evolutionChain?.count == 1 {
+            return
+        } else if pokemon.evolutionChain[1] == pokemon.id {
+            return
+        } else {
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![1]))
+            performSegue(withIdentifier: "showForm", sender: nil)
+        }
+    }
+    
+    @IBAction func thirdFormPressed(_ sender: Any) {
+        if pokemon.evolutionChain?.count == 1 {
+            return
+        } else if pokemon.evolutionChain[2] == pokemon.id {
+            return
+        } else {
+            store.dispatch(SelectPokemonIdAction(selectedPokemonId: pokemon.evolutionChain![2]))
+            performSegue(withIdentifier: "showForm", sender: nil)
+        }
+    }*/
     
     func getIndex(_ region: String) -> String {
         if let index = pokemon?.indexes?[region] {

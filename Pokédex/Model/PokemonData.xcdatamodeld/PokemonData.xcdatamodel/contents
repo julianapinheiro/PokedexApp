@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="16G1212" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Pokemon" representedClassName="Pokemon" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="evolutionChain" optional="YES" attributeType="Transformable" customClassName="[Int16]" syncable="YES"/>
         <attribute name="height" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="indexes" optional="YES" attributeType="Transformable" customClassName="[String: String]" syncable="YES"/>
@@ -20,7 +21,7 @@
         <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="pokemonInfo" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Pokemon" inverseName="pokemonId" inverseEntity="Pokemon" syncable="YES"/>
-        <relationship name="types" optional="YES" toMany="YES" minCount="1" maxCount="2" deletionRule="Nullify" destinationEntity="Type" inverseName="pokemonList" inverseEntity="Type" syncable="YES"/>
+        <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Type" inverseName="pokemonList" inverseEntity="Type" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -28,13 +29,18 @@
         </uniquenessConstraints>
     </entity>
     <entity name="Type" representedClassName="Type" syncable="YES">
-        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="pokemonList" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PokemonId" inverseName="types" inverseEntity="PokemonId" syncable="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="180"/>
-        <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="103"/>
-        <element name="Type" positionX="54" positionY="153" width="128" height="88"/>
+        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="193"/>
+        <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="105"/>
+        <element name="Type" positionX="54" positionY="153" width="128" height="90"/>
     </elements>
 </model>

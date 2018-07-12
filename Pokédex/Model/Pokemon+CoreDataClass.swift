@@ -18,7 +18,6 @@ public class Pokemon: NSManagedObject, Mappable {
     }
     
     public required init?(map: Map) {
-        // ???????? por que
         let entity = NSEntityDescription.entity(forEntityName: "Pokemon", in: context)
         super.init(entity: entity!, insertInto: context)
     }
@@ -74,7 +73,54 @@ public class Pokemon: NSManagedObject, Mappable {
             return [((type_entry0["type"] as! Dictionary<String, String>)["name"])!]
         }
     } ,  toJSON: { (value: Array<String>?) -> Any? in return "object to json not supported" })
-
+    
+    
+    static func urlToId(_ URLString: String) -> Int16 {
+        let url = URL(string: URLString)
+        return Int16((url?.pathComponents.last!)!)!
+    }
+    
+    let transformChain = TransformOf<[Int16], Any>(fromJSON: { (value: Any?) -> [Int16]? in
+        let chainDict = value as! Dictionary<String, Any>
+        var chain: Array<Int16> = []
+       
+        // First form
+        var form = urlToId((chainDict["species"] as! Dictionary<String, String>)["url"]!)
+        chain.append(form)
+        
+        // First Evolutions
+        let evolutionsArray = chainDict["evolves_to"] as! Array<Dictionary<String, Any>>
+        for evolution in evolutionsArray {
+            if evolution.count > 0 {
+                // Second form
+                form = urlToId((evolution["species"]! as! Dictionary<String, String>)["url"]!)
+                chain.append(form)
+                
+                // Second evolutions
+                let secondEvolutionsArray = evolution["evolves_to"] as! Array<Dictionary<String, Any>>
+                for secondEvolution in secondEvolutionsArray {
+                    if secondEvolution.count > 0 {
+                        // Third form
+                        form = urlToId((secondEvolution["species"]! as! Dictionary<String, String>)["url"]!)
+                        chain.append(form)
+                    }
+                }
+           }
+        }
+        return chain
+    },  toJSON: { (value: [Int16]?) -> Any? in return "object to json not supported" })
+    
+    let transformPokemonId = TransformOf<PokemonId, Any>(fromJSON: { (value: Any?) -> PokemonId? in
+        let id = value as! Int16
+        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id = %x", id)
+        let pokemon = try! context.fetch(fetchRequest)
+        if pokemon.count > 0 {
+            return pokemon[0]
+        } else {
+            return nil
+        }
+    },  toJSON: { (value: PokemonId?) -> Any? in return "object to json not supported" })
     
     public func mapping(map: Map) {
         id <- map["id"]
@@ -85,6 +131,8 @@ public class Pokemon: NSManagedObject, Mappable {
         text_entry <- (map["flavor_text_entries"], transformTextEntry)
         indexes <- (map["pokedex_numbers"], transformPokedexNumbers)
         types <- (map["types"], transformTypes)
+        evolutionChain <- (map["chain"], transformChain)
+        pokemonId <- (map["id"], transformPokemonId)
     }
 }
 

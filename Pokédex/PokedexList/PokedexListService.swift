@@ -37,14 +37,17 @@ class PokedexListService {
         let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         var typesList = try! context.fetch(fetchRequest)
-        
+
         // If not found in CoreData, fetch from API and save in CoreData
-        if typesList.isEmpty {
+        if typesList.count < typesSize {
             fetchTypes(1, completion: { success in
                 if success {
                     print("PokedexListServices: Types fetched from API")
                     typesList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdateTypesListAction(list: typesList))
+                    completion(true)
+                } else {
+                    print("PokedexListServices: Error fetching types from API")
                     completion(true)
                 }
             })
@@ -64,12 +67,15 @@ class PokedexListService {
         var pokedexList = try! context.fetch(fetchRequest)
         
         // If not found in CoreData, fetch from API and save in CoreData
-        if pokedexList.isEmpty {
+        if pokedexList.count < pokedexSize {
             fetchPokedex {success in
                 if success {
                     print("PokedexListServices: Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdateListAction(list: pokedexList))
+                    completion(true)
+                } else {
+                    print("PokedexListServices: Error fetching Pokedex from API")
                     completion(true)
                 }
             }
@@ -87,6 +93,11 @@ class PokedexListService {
     // Um request cria todos os objetos PokemonId :D
     func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
         Alamofire.request((URL(string: root + "pokemon/?limit=" + String(pokedexSize)))!).responseJSON(completionHandler: { response in
+            if (response.result.error != nil) {
+                print(response.result.error!)
+                completion(false)
+                return
+            }
             if let json = response.result.value as! [String: Any]? {
                 let pokemonList = json["results"] as! Array<Dictionary<String, Any>>
                 for pokemonItem in pokemonList  {
@@ -108,7 +119,7 @@ class PokedexListService {
         let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
             //print("Pokemon Sprite already saved for id=" + String(pokemonId))
-            return
+            completion(false)
         }
         
         // Create Directory "pokemon"
@@ -133,14 +144,19 @@ class PokedexListService {
     func fetchTypes(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
         let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(id)).appendingPathComponent("/")
         Alamofire.request(url!).responseJSON(completionHandler: { response in
+            if (response.result.error != nil) {
+                print(response.result.error!)
+                completion(false)
+                return
+            }
             if let json = response.result.value as! [String: Any]? {
                 let type = Type(JSON: json)
                 context.insert(type!)
                 try! context.save()
-                //print("PokedexListServices: Fetched and saved Type name=\(type!.name!)")
-                if self.index < self.typesSize - 1 {
+                //print("PokedexListServices: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
+                if self.index < self.typesSize {
                     self.index += 1
-                    self.fetchTypes(self.index + 1, completion: { success in
+                    self.fetchTypes(self.index, completion: { success in
                         if success {
                             completion(true)
                         }

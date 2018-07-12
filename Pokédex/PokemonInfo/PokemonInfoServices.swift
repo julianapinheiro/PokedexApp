@@ -27,14 +27,24 @@ class PokemonInfoServices {
                 Alamofire.request((URL(string: PokedexListService.shared.root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
                     print("PokemonInfoServices: Did request species")
                     if let pokemonSpeciesJSON = response.result.value as! [String : Any]? {
-                        let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current })
-                        let pokemon = Pokemon(JSON: json)
-                        pokemon!.id = Int16(id)
-                        context.insert(pokemon!)
-                        try! context.save()
-                        print("PokemonInfoServices: Fetched and saved Pokemon id=\(pokemon!.id)")
-                        store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!)) // Update Selected
-                        store.dispatch(AppendPokemonInfoList(pokemon: pokemon!))       // Add to list
+                        let chainUrl:String = (pokemonSpeciesJSON["evolution_chain"] as! Dictionary<String, String>)["url"]!
+                        
+                        // Fetch evolution-chain/evoid
+                        Alamofire.request(URL(string: chainUrl)!).responseJSON(completionHandler: { response in
+                            print("PokemonInfoServices: Did request chain")
+                            if let pokemonChainJSON = response.result.value as! [String : Any]? {
+                                
+                                let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current }).merging(pokemonChainJSON, uniquingKeysWith: {(current, _) in current })
+                                let pokemon = Pokemon(JSON: json)
+                                pokemon!.id = Int16(id)
+                                context.insert(pokemon!)
+                                try! context.save()
+                                print("PokemonInfoServices: Fetched and saved Pokemon id=\(pokemon!.id)")
+                                store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon!)) // Update Selected
+                                store.dispatch(AppendPokemonInfoList(pokemon: pokemon!))       // Add to list
+                                
+                            }
+                        })
                     }
                 })
                 

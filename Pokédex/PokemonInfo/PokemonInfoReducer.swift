@@ -27,15 +27,12 @@ func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoS
         
     case let action as UpdatePokemonAction:
         state.selectedPokemon = action.selectedPokemon
-        print("UpdatePokemonAction")
     
     case let action as AppendPokemonInfoList:
         state.pokemonInfoList.append(action.pokemon)
-        print("AppendPokemonInfoList")
     
     case let action as SetPokemonInfoList:
         state.pokemonInfoList = action.list
-        print("SetPokemonInfoList")
         
     default:
         break
