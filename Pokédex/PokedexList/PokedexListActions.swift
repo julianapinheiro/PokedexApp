@@ -9,7 +9,7 @@
 import Foundation
 import ReSwift
 
-struct UpdateListAction: Action {
+struct UpdatePokedexListAction: Action {
     let list: [PokemonId]
 }
 
@@ -21,12 +21,16 @@ struct UpdateGenListAction: Action {
     let list: [Generation]
 }
 
-struct UpdateFilteredPokemon: Action {
+struct UpdateFilteredListAction: Action {
     let list: [PokemonId]
 }
 
-struct SetTypeScope: Action {
-    let scope: Type?
+struct SetTypeScopeAction: Action {
+    let type: Type?
+}
+
+struct SetGenScopeAction: Action {
+    let gen: Generation?
 }
 
 

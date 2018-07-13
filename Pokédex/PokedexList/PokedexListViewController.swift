@@ -137,7 +137,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         let filteredPokemon = pokedexList.filter({( pokemon : PokemonId) -> Bool in
             return (pokemon.name?.lowercased().contains(searchText.lowercased()))!
         })
-        store.dispatch(UpdateFilteredPokemon(list: filteredPokemon))
+        store.dispatch(UpdateFilteredListAction(list: filteredPokemon))
     }
     
     // -------------------------------------------------------------------------

@@ -101,7 +101,7 @@ class PokedexListServices {
                 if success {
                     print("PokedexListServices: Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
-                    store.dispatch(UpdateListAction(list: pokedexList))
+                    store.dispatch(UpdatePokedexListAction(list: pokedexList))
                     completion(true)
                 } else {
                     print("PokedexListServices: Error fetching Pokedex from API")
@@ -110,7 +110,7 @@ class PokedexListServices {
             }
         } else {
             print("PokedexListServices: Pokedex fetched from CoreData")
-            store.dispatch(UpdateListAction(list: pokedexList))
+            store.dispatch(UpdatePokedexListAction(list: pokedexList))
             completion(true)
         }
     }

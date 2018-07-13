@@ -11,18 +11,24 @@ import ReSwift
 
 struct PokedexListState {
     var pokedexList:[PokemonId]
+    var filteredPokedexList:[PokemonId]
+    
     var typesList:[Type]
     var genList:[Generation]
-    var filteredPokedexList:[PokemonId]
+    
     var typeScope:Type?
+    var genScope:Generation?
     var isFiltering:Bool
 
     init() {
         self.pokedexList = []
+        self.filteredPokedexList = []
+        
         self.typesList = []
         self.genList = []
-        self.filteredPokedexList = []
+        
         self.typeScope = nil
+        self.genScope = nil
         self.isFiltering = false
     }
 }

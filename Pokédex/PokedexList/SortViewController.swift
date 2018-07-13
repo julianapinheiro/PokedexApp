@@ -13,9 +13,11 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
+    
     var typesList = [Type?]()
     var genList = [Generation?]()
     var selectedType: Type? = nil
+    var selectedGen: Generation? = nil
     
     override func viewDidLoad() {
         // UI Setup
@@ -52,6 +54,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
             self.tableView.reloadData()
         }
         self.selectedType = store.state.pokedexListState.typeScope
+        self.selectedGen = store.state.pokedexListState.genScope
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -110,11 +113,11 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
                 } else {
                     cell.textLabel?.text = genList[indexPath.row]!.name?.capitalized.replacingOccurrences(of: "-", with: " ")
                 }
-                /*if typesList[indexPath.row] == selectedType {
+                if genList[indexPath.row] == selectedGen {
                     cell.accessoryType = UITableViewCellAccessoryType.checkmark
                 } else {
                     cell.accessoryType = UITableViewCellAccessoryType.none
-                }*/
+                }
             default:
                 cell.textLabel?.text = ""
         }
@@ -123,8 +126,17 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        store.dispatch(SetTypeScope(scope: typesList[(indexPath as NSIndexPath).row]))
-        self.dismiss(animated: true, completion: nil)
+        switch indexPath.section {
+        case 0:
+            store.dispatch(SetTypeScopeAction(type: typesList[(indexPath as NSIndexPath).row]))
+            self.dismiss(animated: true, completion: nil)
+        case 1:
+            store.dispatch(SetGenScopeAction(gen: genList[(indexPath as NSIndexPath).row]))
+            self.dismiss(animated: true, completion: nil)
+        default:
+            self.dismiss(animated: true, completion: nil)
+        }
+        
     }
     
     @IBAction func back(_ sender: Any) {
