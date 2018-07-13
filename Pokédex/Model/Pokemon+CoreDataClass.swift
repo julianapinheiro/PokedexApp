@@ -128,11 +128,11 @@ public class Pokemon: NSManagedObject, Mappable {
         height <- map["height"]
         weight <- map["weight"]
         color <- (map["color"], transformColor)
-        text_entry <- (map["flavor_text_entries"], transformTextEntry)
-        indexes <- (map["pokedex_numbers"], transformPokedexNumbers)
         types <- (map["types"], transformTypes)
-        evolutionChain <- (map["chain"], transformChain)
         pokemonId <- (map["id"], transformPokemonId)
+        evolutionChain <- (map["chain"], transformChain)
+        indexes <- (map["pokedex_numbers"], transformPokedexNumbers)
+        text_entry <- (map["flavor_text_entries"], transformTextEntry)
     }
 }
 

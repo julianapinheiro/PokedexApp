@@ -23,9 +23,11 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     let searchController = UISearchController(searchResultsController: nil)
     
-    var pokedexList = [PokemonId]()
+    var isFiltering = false
     var typesList = [Type]()
+    var pokedexList = [PokemonId]()
     var filteredPokedexList = [PokemonId]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,18 +68,20 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
     func newState(state: PokedexListState) {
-        if (!store.state.pokedexListState.pokedexList.isEmpty && store.state.pokedexListState.pokedexList != self.pokedexList) {
-            self.pokedexList = store.state.pokedexListState.pokedexList
+        if (!state.pokedexList.isEmpty && state.pokedexList != self.pokedexList) {
+            self.pokedexList = state.pokedexList
             tableView.reloadData()
+
         }
-        if !store.state.pokedexListState.filteredPokedexList.isEmpty {
-            self.filteredPokedexList = store.state.pokedexListState.filteredPokedexList
+        if !state.filteredPokedexList.isEmpty {
+            self.filteredPokedexList = state.filteredPokedexList
             self.tableView.reloadData()
         }
-        if !store.state.pokedexListState.typesList.isEmpty {
-            self.typesList = store.state.pokedexListState.typesList
+        if !state.typesList.isEmpty {
+            self.typesList = state.typesList
             self.tableView.reloadData()
         }
+        self.isFiltering = state.isFiltering
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -90,7 +94,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isSearching() || isFiltering() {
+        if isSearching() || isFiltering {
             return filteredPokedexList.count
         }
         return self.pokedexList.count
@@ -100,23 +104,23 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokedexListTableCell")! as! PokedexListTableCell
 
         let poke: PokemonId
-        if isSearching() || isFiltering() {
+        if isSearching() || isFiltering {
             poke = filteredPokedexList[indexPath.row]
         } else {
             poke = pokedexList[indexPath.row]
         }
 
         // Fetch pokemon sprite
-        PokedexListServices.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
+        PokedexListService.shared.fetchSprite(pokemonId: Int(poke.id)) { result in
             if result {
                 cell.reloadInputViews()
             } else {
-                cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+                cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
             }
         }
 
         cell.nameLabel?.text = poke.name?.capitalized
-        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListServices.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
+        cell.spriteImageView?.image = UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(poke.id)).relativePath)
         
         return cell
     }
@@ -128,10 +132,6 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         return (searchController.isActive && !searchBarIsEmpty())
     }
     
-    func isFiltering() -> Bool {
-        return store.state.pokedexListState.isFiltering
-    }
-    
     func searchBarIsEmpty() -> Bool {
         // Returns true if the text is empty or nil
         return searchController.searchBar.text?.isEmpty ?? true
@@ -139,7 +139,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
         var list = pokedexList
-        if isFiltering() {
+        if isFiltering {
             list = filteredPokedexList
         }
         let filteredPokemon = list.filter({( pokemon : PokemonId) -> Bool in
@@ -154,7 +154,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
        if let indexPath = tableView.indexPathForSelectedRow {
             let poke: PokemonId
-            if isSearching() || isFiltering() {
+            if isSearching() || isFiltering {
                 poke = filteredPokedexList[(indexPath as NSIndexPath).row]
             } else {
                 poke = pokedexList[(indexPath as NSIndexPath).row]

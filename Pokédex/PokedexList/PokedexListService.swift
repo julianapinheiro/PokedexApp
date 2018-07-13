@@ -1,5 +1,5 @@
 //
-//  PokedexListServices.swift
+//  PokedexListService.swift
 //  Pokédex
 //
 //  Created by Juliana on 29/06/18.
@@ -10,14 +10,14 @@ import Alamofire
 import ObjectMapper
 import CoreData
 
-class PokedexListServices {
+class PokedexListService {
     let pokedexSize:Int = 802
     let typesSize:Int = 18
     let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
-    let spritePath:URL = PokedexListServices.getDocumentsDirectory().appendingPathComponent("pokemon")
+    let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
     
-    static let shared = PokedexListServices()
+    static let shared = PokedexListService()
 
     // -------------------------------------------------------------------------
     // MARK: - Init Pokemon, PokemonId, Type Objects
@@ -29,7 +29,7 @@ class PokedexListServices {
         listFetchRequest.sortDescriptors = [sortDescriptor]
         
         let pokedexInfoList = try! context.fetch(listFetchRequest)
-        print("PokedexListServices: fetched \(pokedexInfoList.count) Pokemon from CoreData")
+        print("PokedexListService: fetched \(pokedexInfoList.count) Pokemon from CoreData")
         store.dispatch(SetPokemonInfoList(list: pokedexInfoList))
     }
     
@@ -44,17 +44,17 @@ class PokedexListServices {
         if typesList.count < typesSize {
             fetchTypes(1, completion: { success in
                 if success {
-                    print("PokedexListServices: Types fetched from API")
+                    print("PokedexListService: Types fetched from API")
                     typesList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdateTypesListAction(list: typesList))
                     completion(true)
                 } else {
-                    print("PokedexListServices: Error fetching types from API")
+                    print("PokedexListService: Error fetching types from API")
                     completion(true)
                 }
             })
         } else {
-            print("PokedexListServices: Types fetched from CoreData")
+            print("PokedexListService: Types fetched from CoreData")
             store.dispatch(UpdateTypesListAction(list: typesList))
             completion(true)
         }
@@ -71,17 +71,17 @@ class PokedexListServices {
         if genList.count < gensSize {
             fetchGenerations(1, completion: { success in
                 if success {
-                    print("PokedexListServices: Generations fetched from API")
+                    print("PokedexListService: Generations fetched from API")
                     genList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdateGenListAction(list: genList))
                     completion(true)
                 } else {
-                    print("PokedexListServices: Error fetching generations from API")
+                    print("PokedexListService: Error fetching generations from API")
                     completion(true)
                 }
             })
         } else {
-            print("PokedexListServices: Generations fetched from CoreData")
+            print("PokedexListService: Generations fetched from CoreData")
             store.dispatch(UpdateGenListAction(list: genList))
             completion(true)
         }
@@ -99,17 +99,17 @@ class PokedexListServices {
         if pokedexList.count < pokedexSize {
             fetchPokedex {success in
                 if success {
-                    print("PokedexListServices: Pokedex fetched from API")
+                    print("PokedexListService: Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
                     store.dispatch(UpdatePokedexListAction(list: pokedexList))
                     completion(true)
                 } else {
-                    print("PokedexListServices: Error fetching Pokedex from API")
+                    print("PokedexListService: Error fetching Pokedex from API")
                     completion(true)
                 }
             }
         } else {
-            print("PokedexListServices: Pokedex fetched from CoreData")
+            print("PokedexListService: Pokedex fetched from CoreData")
             store.dispatch(UpdatePokedexListAction(list: pokedexList))
             completion(true)
         }
@@ -144,7 +144,7 @@ class PokedexListServices {
     func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
         
         // If file already exists
-        let dirPath = PokedexListServices.getDocumentsDirectory().appendingPathComponent("pokemon")
+        let dirPath = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
         let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
         if FileManager.default.fileExists(atPath: filePath.relativePath) {
             //print("Pokemon Sprite already saved for id=" + String(pokemonId))
@@ -162,7 +162,7 @@ class PokedexListServices {
         do {
             data = try Data(contentsOf: URL(string: spritePath)!)
         } catch {
-            print("PokedexListServices: error fetching image")
+            print("PokedexListService: error fetching image")
             return
         }
         let image = UIImage(data: data, scale: UIScreen.main.scale)!
@@ -188,7 +188,7 @@ class PokedexListServices {
                 let type = Type(JSON: json)
                 context.insert(type!)
                 try! context.save()
-                //print("PokedexListServices: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
+                //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
                 if self.typeIndex < self.typesSize {
                     self.typeIndex += 1
                     self.fetchTypes(self.typeIndex, completion: { success in
@@ -197,7 +197,7 @@ class PokedexListServices {
                         }
                     })
                 } else {
-                    //print("PokedexListServices: fetched all types from API")
+                    //print("PokedexListService: fetched all types from API")
                     completion(true)
                 }
             }
@@ -218,7 +218,7 @@ class PokedexListServices {
                 let gen = Generation(JSON: json)
                 context.insert(gen!)
                 try! context.save()
-                //print("PokedexListServices: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
+                //print("PokedexListService: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
                 if self.genIndex < self.gensSize {
                     self.genIndex += 1
                     self.fetchGenerations(self.genIndex, completion: { success in
@@ -227,7 +227,7 @@ class PokedexListServices {
                         }
                     })
                 } else {
-                    //print("PokedexListServices: fetched all generation from API")
+                    //print("PokedexListService: fetched all generation from API")
                     completion(true)
                 }
             }

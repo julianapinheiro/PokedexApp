@@ -13,11 +13,9 @@ import CoreData
 struct PokemonInfoState {
     var selectedPokemonId:PokemonId?
     var selectedPokemon:Pokemon?
-    var failedToFetch:Bool
     var pokemonInfoList: [Pokemon]
     
     init () {
         self.pokemonInfoList = []
-        failedToFetch = false
     }
 }

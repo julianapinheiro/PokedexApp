@@ -27,7 +27,3 @@ struct AppendPokemonInfoList: Action {
 struct SetPokemonInfoList: Action {
     let list: [Pokemon]
 }
-
-struct SetFailedToFetch: Action {
-    let failedToFetch: Bool
-}

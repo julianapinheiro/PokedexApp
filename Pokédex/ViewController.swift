@@ -10,9 +10,7 @@ import UIKit
 import CoreData
 
 class ViewController: UIViewController {
-    let pokedexListServices = PokedexListServices.shared
-    var dataController:DataController!
-    var complete = 0
+    let pokedexListService = PokedexListService.shared
 
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var loadingLabel: UILabel!
@@ -23,16 +21,20 @@ class ViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        loadData()
+    }
+    
+    func loadData() {
         loadingLabel.text = "Fetching Pokémon..."
-        pokedexListServices.startPokemon()
+        pokedexListService.startPokemon()
         loadingLabel.text = "Fetching Pokédex..."
-        pokedexListServices.startPokedex(completion: { success in
+        pokedexListService.startPokedex(completion: { success in
             if success {
                 self.loadingLabel.text = "Fetching Types..."
-                self.pokedexListServices.startTypes(completion: { success in
+                self.pokedexListService.startTypes(completion: { success in
                     if success {
                         self.loadingLabel.text = "Fetching Generations..."
-                        self.pokedexListServices.startGenerations(completion: { success in
+                        self.pokedexListService.startGenerations(completion: { success in
                             if success {
                                 self.loadNextView()
                             }
