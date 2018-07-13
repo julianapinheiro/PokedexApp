@@ -63,17 +63,23 @@
                                     <outlet property="delegate" destination="YjS-0K-UtT" id="G2Y-AI-g4H"/>
                                 </connections>
                             </tableView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="lje-wx-DFg">
+                                <rect key="frame" x="339" y="35" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="P3F-uA-mXl" firstAttribute="top" secondItem="GTc-Bb-s1U" secondAttribute="top" id="UN1-UY-DFr"/>
                             <constraint firstItem="GTc-Bb-s1U" firstAttribute="centerX" secondItem="P3F-uA-mXl" secondAttribute="centerX" id="X0S-bp-dAZ"/>
                             <constraint firstItem="GTc-Bb-s1U" firstAttribute="centerY" secondItem="P3F-uA-mXl" secondAttribute="centerY" id="XXK-L3-fd3"/>
+                            <constraint firstItem="GTc-Bb-s1U" firstAttribute="top" secondItem="lje-wx-DFg" secondAttribute="top" constant="-15" id="b3b-Jl-Dlh"/>
+                            <constraint firstItem="lje-wx-DFg" firstAttribute="leading" secondItem="P3F-uA-mXl" secondAttribute="trailing" constant="-36" id="goZ-Vp-43o"/>
                             <constraint firstItem="GTc-Bb-s1U" firstAttribute="width" secondItem="pDL-mm-eWl" secondAttribute="width" id="x4Q-8n-gKa"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="P3F-uA-mXl"/>
                     </view>
                     <connections>
+                        <outlet property="loadingIndicator" destination="lje-wx-DFg" id="cik-Um-zwe"/>
                         <outlet property="navBar" destination="GTc-Bb-s1U" id="gS9-Mq-1EQ"/>
                         <outlet property="tableView" destination="wn3-Jm-kmw" id="9p3-Rb-VEs"/>
                     </connections>

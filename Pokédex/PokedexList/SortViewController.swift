@@ -13,6 +13,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
     var typesList = [Type?]()
     var genList = [Generation?]()
@@ -20,6 +21,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     var selectedGen: Generation? = nil
     
     override func viewDidLoad() {
+        setLoadingIndicator(false)
         // UI Setup
         let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
         barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
@@ -128,15 +130,26 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
+            setLoadingIndicator(true)
             store.dispatch(SetTypeScopeAction(type: typesList[(indexPath as NSIndexPath).row]))
             self.dismiss(animated: true, completion: nil)
         case 1:
+            setLoadingIndicator(true)
             store.dispatch(SetGenScopeAction(gen: genList[(indexPath as NSIndexPath).row]))
             self.dismiss(animated: true, completion: nil)
         default:
             self.dismiss(animated: true, completion: nil)
         }
         
+    }
+    
+    func setLoadingIndicator(_ start: Bool) {
+        loadingIndicator.isHidden = !start
+        if start {
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.stopAnimating()
+        }
     }
     
     @IBAction func back(_ sender: Any) {
