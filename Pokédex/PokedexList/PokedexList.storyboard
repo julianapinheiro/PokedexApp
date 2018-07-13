@@ -22,11 +22,11 @@
                                 <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="pokedexListTableCell" rowHeight="85" id="Ovz-ic-g6I" customClass="PokedexListTableCell" customModule="Poke_dex" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="pokedexListTableCell" rowHeight="85" id="Ovz-ic-g6I" customClass="PokedexListTableCell" customModule="Poke_dex" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="85"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Ovz-ic-g6I" id="DaL-9H-46d">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="84.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="342" height="84.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="yps-ob-QsI">
@@ -52,7 +52,7 @@
                                         <connections>
                                             <outlet property="nameLabel" destination="9dS-p8-ncp" id="BKL-bD-LHJ"/>
                                             <outlet property="spriteImageView" destination="yps-ob-QsI" id="Esb-pU-r1k"/>
-                                            <segue destination="8Jb-4y-JKI" kind="presentation" id="yzC-Xf-o44"/>
+                                            <segue destination="8Jb-4y-JKI" kind="show" id="yzC-Xf-o44"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
@@ -76,7 +76,7 @@
                                         <barButtonItem key="rightBarButtonItem" title="Sort" id="Ffq-tC-XJB">
                                             <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <segue destination="WJs-TD-7ez" kind="show" id="2My-SB-uuA"/>
+                                                <segue destination="WJs-TD-7ez" kind="showDetail" action="showViewController:sender:" id="3PA-pt-NBY"/>
                                             </connections>
                                         </barButtonItem>
                                     </navigationItem>
@@ -96,6 +96,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="gfW-YG-ukH"/>
                     </view>
+                    <navigationItem key="navigationItem" id="DKq-Jb-BhB"/>
                     <connections>
                         <outlet property="navBar" destination="Vb0-Nl-3LT" id="60C-kM-YEc"/>
                         <outlet property="searchDisplayController" destination="KUX-is-vPo" id="rPG-vp-Le7"/>
@@ -127,7 +128,9 @@
         <!--PokemonInfoViewController-->
         <scene sceneID="vzA-oB-Roa">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="PokemonInfoViewController" storyboardName="PokemonInfo" referencedIdentifier="PokemonInfoViewController" id="8Jb-4y-JKI" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="PokemonInfoViewController" storyboardName="PokemonInfo" referencedIdentifier="PokemonInfoViewController" id="8Jb-4y-JKI" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="QKo-9Y-5Kj"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MK6-UH-eWJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="558" y="90"/>

@@ -90,7 +90,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFiltering() {
+        if isSearching() || isFiltering() {
             return filteredPokedexList.count
         }
         return self.pokedexList.count
@@ -100,7 +100,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         let cell = tableView.dequeueReusableCell(withIdentifier: "pokedexListTableCell")! as! PokedexListTableCell
 
         let poke: PokemonId
-        if isFiltering() {
+        if isSearching() || isFiltering() {
             poke = filteredPokedexList[indexPath.row]
         } else {
             poke = pokedexList[indexPath.row]
@@ -124,8 +124,12 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     // -------------------------------------------------------------------------
     // MARK: - Private instance methods
     
+    func isSearching() -> Bool {
+        return (searchController.isActive && !searchBarIsEmpty())
+    }
+    
     func isFiltering() -> Bool {
-        return (searchController.isActive && !searchBarIsEmpty()) || store.state.pokedexListState.isFiltering
+        return store.state.pokedexListState.isFiltering
     }
     
     func searchBarIsEmpty() -> Bool {
@@ -134,7 +138,11 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        let filteredPokemon = pokedexList.filter({( pokemon : PokemonId) -> Bool in
+        var list = pokedexList
+        if isFiltering() {
+            list = filteredPokedexList
+        }
+        let filteredPokemon = list.filter({( pokemon : PokemonId) -> Bool in
             return (pokemon.name?.lowercased().contains(searchText.lowercased()))!
         })
         store.dispatch(UpdateFilteredListAction(list: filteredPokemon))
@@ -146,7 +154,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
        if let indexPath = tableView.indexPathForSelectedRow {
             let poke: PokemonId
-            if isFiltering() {
+            if isSearching() || isFiltering() {
                 poke = filteredPokedexList[(indexPath as NSIndexPath).row]
             } else {
                 poke = pokedexList[(indexPath as NSIndexPath).row]

@@ -45,7 +45,7 @@ class PokemonInfoServices {
     // Fetch info from pokemon/id and pokemon-species/id endpoints
     // Merges both json and creates Pokemon object
     func fetchPokemon(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
-        print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
+        //print("PokemonInfoServices: Fetching pokemon from API id=" + String(id))
         // Fetch pokemon/id
         Alamofire.request((URL(string: PokedexListServices.shared.root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
             if (response.result.error != nil) {
@@ -53,7 +53,7 @@ class PokemonInfoServices {
                 completion(false)
                 return
             }
-            print("PokemonInfoServices: Did request")
+            //print("PokemonInfoServices: Did request")
             if let pokemonJSON = response.result.value as! [String : Any]? {
                 
                 // Fetch pokemon-species/id
@@ -63,7 +63,7 @@ class PokemonInfoServices {
                         completion(false)
                         return
                     }
-                    print("PokemonInfoServices: Did request species")
+                    //print("PokemonInfoServices: Did request species")
                     if let pokemonSpeciesJSON = response.result.value as! [String : Any]? {
                         let chainUrl:String = (pokemonSpeciesJSON["evolution_chain"] as! Dictionary<String, String>)["url"]!
                         
@@ -82,7 +82,7 @@ class PokemonInfoServices {
                                 pokemon!.id = Int16(id)
                                 context.insert(pokemon!)
                                 try! context.save()
-                                print("PokemonInfoServices: Fetched Pokemon id=\(pokemon!.id)")
+                                //print("PokemonInfoServices: Fetched Pokemon id=\(pokemon!.id)")
                                 completion(true)
                                 
                             }
