@@ -78,9 +78,8 @@ class PokemonInfoService {
                             if let pokemonChainJSON = response.result.value as! [String : Any]? {
                                 
                                 let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current }).merging(pokemonChainJSON, uniquingKeysWith: {(current, _) in current })
-                                let pokemon = Pokemon(JSON: json)
+                                let pokemon = Mapper<Pokemon>(context: PrivateMapContext(context)).map(JSON: json)
                                 pokemon!.id = Int16(id)
-                                context.insert(pokemon!)
                                 try! context.save()
                                 //print("PokemonInfoService: Fetched Pokemon id=\(pokemon!.id)")
                                 completion(true)

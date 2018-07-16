@@ -52,7 +52,7 @@
                                         <connections>
                                             <outlet property="nameLabel" destination="9dS-p8-ncp" id="BKL-bD-LHJ"/>
                                             <outlet property="spriteImageView" destination="yps-ob-QsI" id="Esb-pU-r1k"/>
-                                            <segue destination="8Jb-4y-JKI" kind="show" id="yzC-Xf-o44"/>
+                                            <segue destination="8Jb-4y-JKI" kind="presentation" id="yzC-Xf-o44"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

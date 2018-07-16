@@ -6,7 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -49,11 +48,11 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sLz-3i-eBi" userLabel="Inner View">
                                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="1000"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ygi-BD-TVy">
-                                                <rect key="frame" x="0.0" y="20" width="125" height="125"/>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ygi-BD-TVy">
+                                                <rect key="frame" x="0.0" y="20" width="160" height="125"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" secondItem="ygi-BD-TVy" secondAttribute="height" multiplier="96:96" id="3Dz-sr-OuF"/>
-                                                    <constraint firstAttribute="width" constant="125" id="xqj-cx-70O"/>
+                                                    <constraint firstAttribute="height" constant="125" id="3Kb-lY-L3O"/>
+                                                    <constraint firstAttribute="width" constant="160" id="xqj-cx-70O" userLabel="width = 150"/>
                                                 </constraints>
                                             </imageView>
                                             <stackView contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="uht-2b-daC" userLabel="Regions Stack View">
@@ -327,11 +326,8 @@
                                                 </constraints>
                                             </view>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" text="Loading..." textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KfA-lm-WYW">
-                                                <rect key="frame" x="0.0" y="20" width="192" height="125"/>
+                                                <rect key="frame" x="0.0" y="20" width="0.0" height="125"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="192" id="L5z-6V-mfx"/>
-                                                </constraints>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                             </textView>
@@ -409,6 +405,7 @@
                                             <constraint firstItem="myS-M3-rpf" firstAttribute="width" secondItem="koh-Vf-qcX" secondAttribute="width" id="Ns0-C6-w1Q"/>
                                             <constraint firstItem="koh-Vf-qcX" firstAttribute="centerX" secondItem="LDc-ne-iAe" secondAttribute="centerX" id="XBj-iN-a5a"/>
                                             <constraint firstItem="myS-M3-rpf" firstAttribute="centerX" secondItem="sLz-3i-eBi" secondAttribute="centerX" id="Xau-di-cOa"/>
+                                            <constraint firstItem="KfA-lm-WYW" firstAttribute="leading" secondItem="ygi-BD-TVy" secondAttribute="trailing" constant="10" id="Yy2-9N-9Kf"/>
                                             <constraint firstItem="koh-Vf-qcX" firstAttribute="top" secondItem="LDc-ne-iAe" secondAttribute="bottom" constant="20" id="dTL-Om-lDN"/>
                                             <constraint firstItem="LDc-ne-iAe" firstAttribute="centerX" secondItem="sLz-3i-eBi" secondAttribute="centerX" id="fEt-Ga-gSD"/>
                                             <constraint firstItem="kqU-ya-ohK" firstAttribute="centerX" secondItem="sLz-3i-eBi" secondAttribute="centerX" id="h0W-Wl-iRs"/>

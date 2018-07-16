@@ -18,9 +18,12 @@ public class Type: NSManagedObject, Mappable {
     }
     
     public required init?(map: Map) {
-        // ???????? por que
-        let entity = NSEntityDescription.entity(forEntityName: "Type", in: context)
-        super.init(entity: entity!, insertInto: context)
+        var objectContext = context
+        if let mapContext = map.context as? PrivateMapContext {
+            objectContext = mapContext.privateContextMap
+        }
+        let entity = NSEntityDescription.entity(forEntityName: "Type", in: objectContext)
+        super.init(entity: entity!, insertInto: objectContext)
     }
     
     // err

@@ -18,8 +18,12 @@ public class PokemonId: NSManagedObject, Mappable {
     }
     
     public required init?(map: Map) {
-        let entity = NSEntityDescription.entity(forEntityName: "PokemonId", in: context)
-        super.init(entity: entity!, insertInto: context)
+        var objectContext = context
+        if let mapContext = map.context as? PrivateMapContext {
+            objectContext = mapContext.privateContextMap
+        }
+        let entity = NSEntityDescription.entity(forEntityName: "PokemonId", in: objectContext)
+        super.init(entity: entity!, insertInto: objectContext)
     }
     
     let transformId = TransformOf<Int16, Any>(fromJSON: { (value: Any?) -> Int16 in

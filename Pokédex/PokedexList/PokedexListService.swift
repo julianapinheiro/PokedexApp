@@ -97,7 +97,7 @@ class PokedexListService {
         
         // If not found in CoreData, fetch from API and save in CoreData
         if pokedexList.count < pokedexSize {
-            fetchPokedex {success in
+            fetchPokedex (objectContext: context, {success in
                 if success {
                     print("PokedexListService: Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
@@ -107,7 +107,7 @@ class PokedexListService {
                     print("PokedexListService: Error fetching Pokedex from API")
                     completion(true)
                 }
-            }
+            })
         } else {
             print("PokedexListService: Pokedex fetched from CoreData")
             store.dispatch(UpdatePokedexListAction(list: pokedexList))
@@ -116,11 +116,24 @@ class PokedexListService {
     }
     
     // -------------------------------------------------------------------------
+    // MARK: - Save object to Core Data Methods
+    
+    func createPokedexFromJSON(_ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
+        let list = JSON["results"] as! Array<Dictionary<String, Any>>
+        let context = PrivateMapContext(objectContext)
+        for pokemonItem in list  {
+            _ = Mapper<PokemonId>(context: context).map(JSON: pokemonItem)
+            try! objectContext.save()
+            //print("Saving object PokemonId id=\(pokemon!.id)")
+        }
+    }
+    
+    // -------------------------------------------------------------------------
     // MARK: - Fetch Methods
     
     // -- Fetch from pokemon/limit?=802
     // Um request cria todos os objetos PokemonId :D
-    func fetchPokedex(completion: @escaping (_ success: Bool) -> Void) {
+    func fetchPokedex(objectContext: NSManagedObjectContext, _ completion: @escaping (_ success: Bool) -> Void) {
         Alamofire.request((URL(string: root + "pokemon/?limit=" + String(pokedexSize)))!).responseJSON(completionHandler: { response in
             if (response.result.error != nil) {
                 print(response.result.error!)
@@ -128,13 +141,7 @@ class PokedexListService {
                 return
             }
             if let json = response.result.value as! [String: Any]? {
-                let pokemonList = json["results"] as! Array<Dictionary<String, Any>>
-                for pokemonItem in pokemonList  {
-                    let pokemon = PokemonId(JSON: pokemonItem)
-                    context.insert(pokemon!)
-                    try! context.save()
-                    //print("Saving object PokemonId id=\(pokemon!.id)")
-                }
+                self.createPokedexFromJSON(json, objectContext)
                 completion(true)
             }
         })
@@ -185,8 +192,7 @@ class PokedexListService {
                 return
             }
             if let json = response.result.value as! [String: Any]? {
-                let type = Type(JSON: json)
-                context.insert(type!)
+                _ = Mapper<Type>(context: PrivateMapContext(context)).map(JSON: json)
                 try! context.save()
                 //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
                 if self.typeIndex < self.typesSize {
@@ -215,8 +221,7 @@ class PokedexListService {
                 return
             }
             if let json = response.result.value as! [String: Any]? {
-                let gen = Generation(JSON: json)
-                context.insert(gen!)
+                _ = Mapper<Generation>(context: PrivateMapContext(context)).map(JSON: json)
                 try! context.save()
                 //print("PokedexListService: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
                 if self.genIndex < self.gensSize {

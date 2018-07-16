@@ -8,6 +8,16 @@
 
 import Foundation
 import CoreData
+import ObjectMapper
+
+class PrivateMapContext: MapContext {
+    
+    let privateContextMap : NSManagedObjectContext
+    
+    init(_ context: NSManagedObjectContext) {
+        self.privateContextMap = context
+    }
+}
 
 class DataController {
     let persistentContainer:NSPersistentContainer
@@ -16,10 +26,17 @@ class DataController {
         return persistentContainer.viewContext
     }
     
-    init(modelName:String) {
-        persistentContainer = NSPersistentContainer(name: modelName)
-        viewContext.automaticallyMergesChangesFromParent = true
-        viewContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
+    /*init(modelName: String) {
+        self.persistentContainer = NSPersistentContainer(name: modelName)
+    }*/
+    
+    // For testing
+    init(container: NSPersistentContainer) {
+        self.persistentContainer = container
+    }
+    
+    convenience init(modelName: String) {
+        self.init(container: NSPersistentContainer(name: modelName))
     }
     
     func load(completion: (() -> Void)? = nil) {
@@ -27,6 +44,8 @@ class DataController {
             guard error == nil else {
                 fatalError(error!.localizedDescription)
             }
+            self.viewContext.automaticallyMergesChangesFromParent = true
+            self.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
             self.autoSaveViewContext()
             completion?()
         })
