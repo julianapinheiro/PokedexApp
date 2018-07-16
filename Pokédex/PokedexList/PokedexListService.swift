@@ -120,12 +120,24 @@ class PokedexListService {
     
     func createPokedexFromJSON(_ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
         let list = JSON["results"] as! Array<Dictionary<String, Any>>
-        let context = PrivateMapContext(objectContext)
+        let privateContext = PrivateMapContext(objectContext)
         for pokemonItem in list  {
-            _ = Mapper<PokemonId>(context: context).map(JSON: pokemonItem)
+            _ = Mapper<PokemonId>(context: privateContext).map(JSON: pokemonItem)
             try! objectContext.save()
             //print("Saving object PokemonId id=\(pokemon!.id)")
         }
+    }
+    
+    func createTypeFromJSON(_ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
+        let type = Mapper<Type>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
+        type?.fetchPokemon(objectContext)
+        try! context.save()
+    }
+    
+    func createGenerationFromJSON(_ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
+        let gen = Mapper<Generation>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
+        gen?.fetchPokemon(objectContext)
+        try! context.save()
     }
     
     // -------------------------------------------------------------------------
@@ -192,8 +204,7 @@ class PokedexListService {
                 return
             }
             if let json = response.result.value as! [String: Any]? {
-                _ = Mapper<Type>(context: PrivateMapContext(context)).map(JSON: json)
-                try! context.save()
+                self.createTypeFromJSON(json, context)
                 //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
                 if self.typeIndex < self.typesSize {
                     self.typeIndex += 1
@@ -221,8 +232,7 @@ class PokedexListService {
                 return
             }
             if let json = response.result.value as! [String: Any]? {
-                _ = Mapper<Generation>(context: PrivateMapContext(context)).map(JSON: json)
-                try! context.save()
+                self.createGenerationFromJSON(json, context)
                 //print("PokedexListService: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
                 if self.genIndex < self.gensSize {
                     self.genIndex += 1

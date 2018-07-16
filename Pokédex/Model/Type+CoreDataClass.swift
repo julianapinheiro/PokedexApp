@@ -13,6 +13,9 @@ import ObjectMapper
 
 @objc(Type)
 public class Type: NSManagedObject, Mappable {
+    
+    var pokemonListTemp: Array<String>!
+
     public override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: context)
     }
@@ -26,25 +29,32 @@ public class Type: NSManagedObject, Mappable {
         super.init(entity: entity!, insertInto: objectContext)
     }
     
-    // err
-    let transformPokemonList = TransformOf<NSSet, Any>(fromJSON: { (value: Any?) -> NSSet? in
-        let pokemonArray = value as! Array<Dictionary<String, Any>>
-        var pokemonList:Array<PokemonId> = []
-        for pokemonItem in pokemonArray {
-            let pokemonName = (pokemonItem["pokemon"] as! Dictionary<String, String>)["name"]
+    func fetchPokemon(_ objectContext: NSManagedObjectContext) {
+        var pokemonArray:Array<PokemonId> = []
+        for pokemonName in self.pokemonListTemp {
             let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "name = %@", pokemonName!.capitalized)
-            let pokemon = try! context.fetch(fetchRequest)
+            fetchRequest.predicate = NSPredicate(format: "name = %@", pokemonName.capitalized)
+            let pokemon = try! objectContext.fetch(fetchRequest)
             if pokemon.count > 0 {
-                pokemonList.append(pokemon[0])
+                pokemonArray.append(pokemon[0])
             }
         }
-        return NSSet(array: pokemonList)
-    },  toJSON: { (value: NSSet?) -> Any? in return "object to json not supported" })
+        self.pokemonList = NSSet(array: pokemonArray)
+    }
+    
+    let transformPokemonList = TransformOf<Array<String>, Any>(fromJSON: { (value: Any?) -> Array<String>? in
+        let pokemonArray = value as! Array<Dictionary<String, Any>>
+        var pokemonList:Array<String> = []
+        for pokemonItem in pokemonArray {
+            let pokemonName = (pokemonItem["pokemon"] as! Dictionary<String, String>)["name"]
+            pokemonList.append(pokemonName!)
+        }
+        return pokemonList
+    },  toJSON: { (value: Array<String>?) -> Any? in return "object to json not supported" })
     
     public func mapping(map: Map) {
         id <- map["id"]
         name <- map["name"]
-        pokemonList <- (map["pokemon"], transformPokemonList)
+        pokemonListTemp <- (map["pokemon"], transformPokemonList)
     }
 }

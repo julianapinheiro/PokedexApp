@@ -52,12 +52,6 @@ public class Pokemon: NSManagedObject, Mappable {
         return pokedex_numbers
     },  toJSON: { (value: Dictionary<String, String>?) -> Any? in return "object to json not supported" })
     
-    let transformColor = TransformOf<String, Any>(fromJSON: { (value: Any?) -> String? in
-        let color_entry = value as! Dictionary<String, Any>
-        var color:String = color_entry["name"] as! String
-        return color
-    },  toJSON: { (value: String?) -> Any? in return "object to json not supported" })
-    
     let transformTypes = TransformOf<Array<String>, Any>(fromJSON: { (value: Any?) -> Array<String>? in
         let types_entries = value as! Array<Dictionary<String, Any>>
         let type_entry0 = types_entries[0] as Dictionary<String, Any>
@@ -131,7 +125,7 @@ public class Pokemon: NSManagedObject, Mappable {
         name <- map["name"]
         height <- map["height"]
         weight <- map["weight"]
-        color <- (map["color"], transformColor)
+        color <- map["color.name"]
         types <- (map["types"], transformTypes)
         pokemonId <- (map["id"], transformPokemonId)
         evolutionChain <- (map["chain"], transformChain)

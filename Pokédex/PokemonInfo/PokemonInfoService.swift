@@ -42,6 +42,12 @@ class PokemonInfoService {
         }
     }
     
+    func createPokemonFromJSON(id: Int, _ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
+        let pokemon = Mapper<Pokemon>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
+        pokemon!.id = Int16(id)
+        try! objectContext.save()
+    }
+    
     // Fetch info from pokemon/id and pokemon-species/id endpoints
     // Merges both json and creates Pokemon object
     func fetchPokemon(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
@@ -78,12 +84,9 @@ class PokemonInfoService {
                             if let pokemonChainJSON = response.result.value as! [String : Any]? {
                                 
                                 let json = pokemonJSON.merging(pokemonSpeciesJSON, uniquingKeysWith: {(current, _) in current }).merging(pokemonChainJSON, uniquingKeysWith: {(current, _) in current })
-                                let pokemon = Mapper<Pokemon>(context: PrivateMapContext(context)).map(JSON: json)
-                                pokemon!.id = Int16(id)
-                                try! context.save()
+                                self.createPokemonFromJSON(id: id, json, context)
                                 //print("PokemonInfoService: Fetched Pokemon id=\(pokemon!.id)")
                                 completion(true)
-                                
                             }
                         })
                     }
