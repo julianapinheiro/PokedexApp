@@ -14,7 +14,7 @@ import ObjectMapper
 @objc(Type)
 public class Type: NSManagedObject, Mappable {
     
-    var pokemonListTemp: Array<String>!
+    private var pokemonListTemp: Array<String>!
 
     public override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: context)
@@ -30,16 +30,15 @@ public class Type: NSManagedObject, Mappable {
     }
     
     func fetchPokemon(_ objectContext: NSManagedObjectContext) {
-        var pokemonArray:Array<PokemonId> = []
+        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
         for pokemonName in self.pokemonListTemp {
-            let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "name = %@", pokemonName.capitalized)
             let pokemon = try! objectContext.fetch(fetchRequest)
             if pokemon.count > 0 {
-                pokemonArray.append(pokemon[0])
+                self.addToPokemonList(pokemon[0])
             }
         }
-        self.pokemonList = NSSet(array: pokemonArray)
+        self.pokemonListTemp = nil
     }
     
     let transformPokemonList = TransformOf<Array<String>, Any>(fromJSON: { (value: Any?) -> Array<String>? in

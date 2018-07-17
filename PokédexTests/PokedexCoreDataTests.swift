@@ -111,8 +111,7 @@ class PokedexCoreDataTests: XCTestCase {
         
         
     }
-    
-    // TO-DO: test this
+
     func testCreatingGeneration() {
         let jsonDex = ["results": [
             ["name": "tester", "url":"https://pokeapi.co/api/v2/pokemon-species/1001/"],
@@ -123,18 +122,18 @@ class PokedexCoreDataTests: XCTestCase {
         let json:[String:Any] = [
             "name": "generation-x",
             "id": Int16(10),
-            "pokemon": [
-                ["slot": 1, "pokemon": ["name": "tester", "url":"https://pokeapi.co/api/v2/pokemon/1001/"] ],
-                ["slot": 1 , "pokemon": ["name": "testerEvo", "url":"https://pokeapi.co/api/v2/pokemon/1002/"] ],
+            "pokemon_species": [
+                [ "name": "tester", "url":"https://pokeapi.co/api/v2/pokemon/1001/" ],
+                [ "name": "testerEvo", "url":"https://pokeapi.co/api/v2/pokemon/1002/" ],
             ],
             ]
         
-        PokedexListService.shared.createTypeFromJSON(json, mockPersistentContainer.viewContext)
+        PokedexListService.shared.createGenerationFromJSON(json, mockPersistentContainer.viewContext)
         
         let results = numberOfObjectsInPersistentStore("Generation")
-        let gen = fetchTypeInPersistentStore(10)
+        let gen = fetchGenerationInPersistentStore(10)
         XCTAssertEqual(results, 1)
-        XCTAssertEqual(gen.id, 20)
+        XCTAssertEqual(gen.id, 10)
         XCTAssertEqual(gen.name, "generation-x")
         XCTAssertEqual(gen.pokemonList?.count, 2)
         for pokemon in Array(gen.pokemonList!) as! Array<PokemonId> {
