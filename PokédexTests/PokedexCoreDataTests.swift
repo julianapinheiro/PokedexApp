@@ -43,11 +43,16 @@ class PokedexCoreDataTests: XCTestCase {
     }
     
     func testCreatingPokemon() {
+        let jsonDex = ["results": [
+            ["name": "tester", "url":"https://pokeapi.co/api/v2/pokemon-species/1001/"],]]
+        
+        PokedexListService.shared.createPokedexFromJSON(jsonDex, mockPersistentContainer.viewContext)
+        
         let json:[String:Any] = [
             "name": "tester",
              "id": Int16(1001),
-             "height": Int16(10),
-             "weight": Int16(10),
+             "height": Float(10),
+             "weight": Float(10),
              "color": ["url":"", "name": "red"],
              "types": [
                 ["slot": 1, "type": ["name": "testerType", "url": ""] ],
@@ -72,7 +77,7 @@ class PokedexCoreDataTests: XCTestCase {
         XCTAssertEqual(results, 1)
         XCTAssertEqual(pokemon.id, 1001)
         XCTAssertEqual(pokemon.name, "tester")
-        XCTAssertEqual(pokemon.height, 10)
+        XCTAssertEqual(pokemon.height, 1)
         XCTAssertEqual(pokemon.color, "red")
         XCTAssertEqual(pokemon.types!, ["testerType", "flying"])
         XCTAssertEqual(pokemon.evolutionChain!, [1001, 1002, 1003])
