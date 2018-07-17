@@ -147,21 +147,22 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             label?.textColor = getUIColor(color)
         }
         
-        heightValueLabel.text = String(describing: pokemon!.height)
-        weightValueLabel.text = String(describing: pokemon!.weight)
+        heightValueLabel.text = String(describing: pokemon!.height) + "m"
+        weightValueLabel.text = String(describing: pokemon!.weight) + "kg"
         
         let types:String
         let type1:String = (pokemon?.types![0])!.capitalized
         if pokemon.types!.count > 1 {
             let type2:String = (pokemon?.types![1])!.capitalized
-            types = ("\(type1)/\(type2)")
+            types = type1 + "/" + type2
         } else {
-            types = ("\(type1)")
+            types = type1
         }
-        typeValueLabel.text = types.replacingOccurrences(of: "Optional(", with: "").replacingOccurrences(of: ")", with: "")
+        typeValueLabel.text = types
         
         // evoluções was a mistake
         if pokemon.evolutionChain != nil {
+            
             let formImageViews = [firstFormImageView, secondFormImageView, thirdFormImageView]
             var index = 0
             for formId in pokemon.evolutionChain! {
@@ -173,23 +174,26 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
                     break
                 }
             }
+            
             if pokemon.evolutionChain!.count > 3 {
                 var extraEvo = pokemon.evolutionChain!
                 extraEvo.removeSubrange(0...2)
                 let count = extraEvo.underestimatedCount
                 var extraImages = Array(repeating: UIImageView(), count: count)
+                
                 for index in 0...count - 1 {
                     PokedexListService.shared.fetchSprite(pokemonId: Int(extraEvo[index])) { result in
                         extraImages[index] = UIImageView(image: UIImage(contentsOfFile: PokedexListService.shared.spritePath.appendingPathComponent(String(extraEvo[index])).relativePath))
                     }
                 }
+                
                 for image in extraImages {
                     moreEvoStackView.addArrangedSubview(image)
                 }
             }
         }
     }
-    
+ 
     // -------------------------------------------------------------------------
     // MARK: - IBActions
     

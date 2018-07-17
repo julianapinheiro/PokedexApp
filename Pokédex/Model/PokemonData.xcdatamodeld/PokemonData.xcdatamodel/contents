@@ -13,13 +13,13 @@
     <entity name="Pokemon" representedClassName="Pokemon" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="evolutionChain" optional="YES" attributeType="Transformable" customClassName="[Int16]" syncable="YES"/>
-        <attribute name="height" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="height" optional="YES" attributeType="Float" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="id" optional="YES" attributeType="Integer 16" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="indexes" optional="YES" attributeType="Transformable" customClassName="[String: String]" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="text_entry" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="types" optional="YES" attributeType="Transformable" customClassName="[String]" syncable="YES"/>
-        <attribute name="weight" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Float" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="pokemonId" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PokemonId" inverseName="pokemonInfo" inverseEntity="PokemonId" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -50,9 +50,9 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="195"/>
+        <element name="Generation" positionX="-135" positionY="90" width="128" height="90"/>
+        <element name="Pokemon" positionX="-324" positionY="72" width="128" height="193"/>
         <element name="PokemonId" positionX="-155" positionY="-63" width="128" height="120"/>
         <element name="Type" positionX="54" positionY="153" width="128" height="90"/>
-        <element name="Generation" positionX="-135" positionY="90" width="128" height="90"/>
     </elements>
 </model>

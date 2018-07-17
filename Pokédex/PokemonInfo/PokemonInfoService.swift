@@ -12,6 +12,8 @@ import ObjectMapper
 import CoreData
 
 class PokemonInfoService {
+    let root:String = "http://pokeapi.co/api/v2/"
+    
     static let shared = PokemonInfoService()
     
     func loadPokemon(_ id: Int, _ completion: @escaping (_ success: Bool) -> Void) {
@@ -45,6 +47,10 @@ class PokemonInfoService {
     func createPokemonFromJSON(id: Int, _ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
         let pokemon = Mapper<Pokemon>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
         pokemon!.id = Int16(id)
+        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id = %x", id)
+        let pokemonId = try! objectContext.fetch(fetchRequest)
+        pokemon!.pokemonId = pokemonId[0]
         try! objectContext.save()
     }
     
@@ -53,7 +59,7 @@ class PokemonInfoService {
     func fetchPokemon(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
         //print("PokemonInfoService: Fetching pokemon from API id=" + String(id))
         // Fetch pokemon/id
-        Alamofire.request((URL(string: PokedexListService.shared.root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
+        Alamofire.request((URL(string: root + "pokemon/" + String(id)))!).responseJSON(completionHandler: { response in
             if (response.result.error != nil) {
                 print(response.result.error!)
                 completion(false)
@@ -63,7 +69,7 @@ class PokemonInfoService {
             if let pokemonJSON = response.result.value as! [String : Any]? {
                 
                 // Fetch pokemon-species/id
-                Alamofire.request((URL(string: PokedexListService.shared.root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
+                Alamofire.request((URL(string: self.root + "pokemon-species/" + String(id)))!).responseJSON(completionHandler: { response in
                     if (response.result.error != nil) {
                         print(response.result.error!)
                         completion(false)

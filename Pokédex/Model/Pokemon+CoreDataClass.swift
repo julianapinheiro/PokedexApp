@@ -120,11 +120,15 @@ public class Pokemon: NSManagedObject, Mappable {
         }
     },  toJSON: { (value: PokemonId?) -> Any? in return "object to json not supported" })
     
+    let transformHeight = TransformOf<Float, Any>(fromJSON: { (value: Any?) -> Float? in
+        return (value as! Float)/Float(10)
+    },  toJSON: { (value: Float?) -> Any? in return "object to json not supported" })
+    
     public func mapping(map: Map) {
         id <- map["id"]
         name <- map["name"]
-        height <- map["height"]
-        weight <- map["weight"]
+        height <- (map["height"], transformHeight)
+        weight <- (map["weight"], transformHeight)
         color <- map["color.name"]
         types <- (map["types"], transformTypes)
         pokemonId <- (map["id"], transformPokemonId)
