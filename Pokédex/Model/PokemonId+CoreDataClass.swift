@@ -34,7 +34,7 @@ public class PokemonId: NSManagedObject, Mappable {
     
     let transformName = TransformOf<String, Any>(fromJSON: { (value: Any?) -> String? in
         let name = value as! String
-        return name.capitalized
+        return name.capitalized.replacingOccurrences(of: "-", with: " ")
     },  toJSON: { (value: String?) -> Any? in return "object to json not supported" } )
     
     public func mapping(map: Map) {

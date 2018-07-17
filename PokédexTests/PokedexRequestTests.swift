@@ -13,9 +13,6 @@ import XCTest
 
 class PokedexRequestTests: XCTestCase {
     
-    var controllerUnderTest: ViewController!
-    var stubDataController: DataController!
-    
     override func setUp() {
         super.setUp()
     }

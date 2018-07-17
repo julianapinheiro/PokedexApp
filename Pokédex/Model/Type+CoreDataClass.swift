@@ -14,7 +14,7 @@ import ObjectMapper
 @objc(Type)
 public class Type: NSManagedObject, Mappable {
     
-    private var pokemonListTemp: Array<String>!
+    private var pokemonListTemp: Array<Int16>!
 
     public override init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?) {
         super.init(entity: entity, insertInto: context)
@@ -31,8 +31,8 @@ public class Type: NSManagedObject, Mappable {
     
     func fetchPokemon(_ objectContext: NSManagedObjectContext) {
         let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
-        for pokemonName in self.pokemonListTemp {
-            fetchRequest.predicate = NSPredicate(format: "name = %@", pokemonName.capitalized)
+        for pokemonIndex in self.pokemonListTemp {
+            fetchRequest.predicate = NSPredicate(format: "id = %x", pokemonIndex)
             let pokemon = try! objectContext.fetch(fetchRequest)
             if pokemon.count > 0 {
                 self.addToPokemonList(pokemon[0])
@@ -41,15 +41,16 @@ public class Type: NSManagedObject, Mappable {
         self.pokemonListTemp = nil
     }
     
-    let transformPokemonList = TransformOf<Array<String>, Any>(fromJSON: { (value: Any?) -> Array<String>? in
+    let transformPokemonList = TransformOf<Array<Int16>, Any>(fromJSON: { (value: Any?) -> Array<Int16>? in
         let pokemonArray = value as! Array<Dictionary<String, Any>>
-        var pokemonList:Array<String> = []
+        var pokemonList:Array<Int16> = []
         for pokemonItem in pokemonArray {
-            let pokemonName = (pokemonItem["pokemon"] as! Dictionary<String, String>)["name"]
-            pokemonList.append(pokemonName!)
+            let pokemonUrl = URL(string: (pokemonItem["pokemon"] as! Dictionary<String, String>)["url"]!)
+            let pokemonIndex = Int16((pokemonUrl?.pathComponents.last!)!)
+            pokemonList.append(pokemonIndex!)
         }
         return pokemonList
-    },  toJSON: { (value: Array<String>?) -> Any? in return "object to json not supported" })
+    },  toJSON: { (value: Array<Int16>?) -> Any? in return "object to json not supported" })
     
     public func mapping(map: Map) {
         id <- map["id"]
