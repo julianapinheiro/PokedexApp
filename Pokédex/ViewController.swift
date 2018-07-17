@@ -8,8 +8,9 @@
 
 import UIKit
 import CoreData
+import ReSwift
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, StoreSubscriber {
     let pokedexListService = PokedexListService.shared
 
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -20,30 +21,38 @@ class ViewController: UIViewController {
         activityIndicator.startAnimating()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        loadData()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        store.subscribe(self) { subcription in
+            subcription
+                .select { state in (state.pokedexListState) }
+        }
     }
     
-    func loadData() {
-        loadingLabel.text = "Fetching Pokémon..."
-        pokedexListService.startPokemon()
-        loadingLabel.text = "Fetching Pokédex..."
-        pokedexListService.startPokedex(completion: { success in
-            if success {
-                self.loadingLabel.text = "Fetching Types..."
-                self.pokedexListService.startTypes(completion: { success in
-                    if success {
-                        self.loadingLabel.text = "Fetching Generations..."
-                        self.pokedexListService.startGenerations(completion: { success in
-                            if success {
-                                self.loadNextView()
-                            }
-                        })
-                    }
-                })
-            }
-        })
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        store.unsubscribe(self)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        loadingLabel.text = "Fetching Pokédex..."
+        pokedexListService.loadData { _ in
+            self.loadNextView()
+        }
+    }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - StoreSubscriber
+    func newState(state: PokedexListState) {
+        if !state.pokedexList.isEmpty {
+            loadingLabel.text = "Fetching Types..."
+        }
+        if !state.typesList.isEmpty {
+            loadingLabel.text = "Fetching Generations..."
+        }
+    }
+    
+    typealias StoreSubscriberStateType = PokedexListState
     
     func loadNextView() {
         let storyboard = UIStoryboard(name: "PokedexList", bundle: nil)

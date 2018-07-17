@@ -9,15 +9,42 @@
 import Alamofire
 import ObjectMapper
 import CoreData
+import ReSwift
 
 class PokedexListService {
+    
+    // API Info
     let pokedexSize:Int = 802
     let typesSize:Int = 18
     let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
     let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
     
-    static let shared = PokedexListService()
+    // Store
+    var serviceStore: Store<AppState>
+    
+    init(serviceStore: Store<AppState>) {
+        self.serviceStore = serviceStore
+    }
+    
+    static let shared = PokedexListService(serviceStore: store)
+    
+    func loadData(completion: @escaping (_ success: Bool) -> Void) {
+        startPokemon()
+        startPokedex(completion: { success in
+            if success {
+                self.startTypes(completion: { success in
+                    if success {
+                        self.startGenerations(completion: { success in
+                            if success {
+                                completion(true)
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    }
 
     // -------------------------------------------------------------------------
     // MARK: - Init Pokemon, PokemonId, Type Objects
@@ -30,7 +57,7 @@ class PokedexListService {
         
         let pokedexInfoList = try! context.fetch(listFetchRequest)
         print("PokedexListService: fetched \(pokedexInfoList.count) Pokemon from CoreData")
-        store.dispatch(SetPokemonInfoList(list: pokedexInfoList))
+        serviceStore.dispatch(SetPokemonInfoList(list: pokedexInfoList))
     }
     
     func startTypes(completion: @escaping (_ success: Bool) -> Void) {
@@ -46,7 +73,7 @@ class PokedexListService {
                 if success {
                     print("PokedexListService: Types fetched from API")
                     typesList = try! context.fetch(fetchRequest)
-                    store.dispatch(UpdateTypesListAction(list: typesList))
+                    self.serviceStore.dispatch(UpdateTypesListAction(list: typesList))
                     completion(true)
                 } else {
                     print("PokedexListService: Error fetching types from API")
@@ -55,7 +82,7 @@ class PokedexListService {
             })
         } else {
             print("PokedexListService: Types fetched from CoreData")
-            store.dispatch(UpdateTypesListAction(list: typesList))
+            serviceStore.dispatch(UpdateTypesListAction(list: typesList))
             completion(true)
         }
     }
@@ -73,7 +100,7 @@ class PokedexListService {
                 if success {
                     print("PokedexListService: Generations fetched from API")
                     genList = try! context.fetch(fetchRequest)
-                    store.dispatch(UpdateGenListAction(list: genList))
+                    self.serviceStore.dispatch(UpdateGenListAction(list: genList))
                     completion(true)
                 } else {
                     print("PokedexListService: Error fetching generations from API")
@@ -82,7 +109,7 @@ class PokedexListService {
             })
         } else {
             print("PokedexListService: Generations fetched from CoreData")
-            store.dispatch(UpdateGenListAction(list: genList))
+            serviceStore.dispatch(UpdateGenListAction(list: genList))
             completion(true)
         }
     }
@@ -101,7 +128,8 @@ class PokedexListService {
                 if success {
                     print("PokedexListService: Pokedex fetched from API")
                     pokedexList = try! context.fetch(fetchRequest)
-                    store.dispatch(UpdatePokedexListAction(list: pokedexList))
+                    self.serviceStore.dispatch(UpdatePokedexListAction(list: pokedexList))
+                    self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedexList))
                     completion(true)
                 } else {
                     print("PokedexListService: Error fetching Pokedex from API")
@@ -110,7 +138,8 @@ class PokedexListService {
             })
         } else {
             print("PokedexListService: Pokedex fetched from CoreData")
-            store.dispatch(UpdatePokedexListAction(list: pokedexList))
+            serviceStore.dispatch(UpdatePokedexListAction(list: pokedexList))
+            self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedexList))
             completion(true)
         }
     }

@@ -13,7 +13,7 @@
         <!--View Controller-->
         <scene sceneID="J9L-0K-3aO">
             <objects>
-                <viewController id="Ic1-pL-WUC" customClass="ViewController" customModule="Poke_dex" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ViewController" id="Ic1-pL-WUC" customClass="ViewController" customModule="Poke_dex" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="E4U-Ks-9bH">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -30,8 +30,8 @@
                                     <constraint firstAttribute="height" constant="50" id="e1G-gS-18Q"/>
                                 </constraints>
                             </activityIndicatorView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIk-eW-tWh">
-                                <rect key="frame" x="98" y="371" width="178" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIk-eW-tWh">
+                                <rect key="frame" x="149.5" y="371" width="75" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.23137254900000001" green="0.23137254900000001" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -49,7 +49,7 @@
                     <connections>
                         <outlet property="activityIndicator" destination="7hf-bc-uZY" id="lE3-cg-qVa"/>
                         <outlet property="loadingLabel" destination="AIk-eW-tWh" id="w5n-Q2-OrV"/>
-                        <segue destination="INm-FI-ZOX" kind="presentation" id="gzT-wi-qZa"/>
+                        <segue destination="INm-FI-ZOX" kind="presentation" identifier="PokedexListSegue" id="gzT-wi-qZa"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QhQ-bY-F9y" userLabel="First Responder" sceneMemberID="firstResponder"/>
