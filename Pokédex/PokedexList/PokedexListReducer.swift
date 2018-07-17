@@ -11,7 +11,7 @@ import ReSwift
 
 func pokedexListReducer(action: Action, state: PokedexListState?) -> PokedexListState {
     var state = state ?? PokedexListState()
-
+    
     switch action {
     case let action as UpdatePokedexListAction:
         state.pokedexList = action.list
@@ -24,38 +24,40 @@ func pokedexListReducer(action: Action, state: PokedexListState?) -> PokedexList
     case let action as SetTypeScopeAction:
         state.typeScope = action.type
         if state.typeScope == nil && state.genScope == nil {
-            state.filteredPokedexList = state.pokedexList
             state.isFiltering = false
-        } else if state.typeScope != nil && state.genScope != nil {
-            state.filteredPokedexList = state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
-                return (state.genScope!.pokemonList?.contains(pokemon))! && (state.typeScope!.pokemonList?.contains(pokemon))!
-            })
-            state.isFiltering = true
         } else {
-            state.filteredPokedexList = state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
-                return (state.typeScope!.pokemonList?.contains(pokemon))!
-            })
             state.isFiltering = true
         }
+        state.filteredPokedexList = sortPokedex(state: state)
     case let action as SetGenScopeAction:
         state.genScope = action.gen
         if state.genScope == nil && state.typeScope == nil {
-            state.filteredPokedexList = state.pokedexList
             state.isFiltering = false
-        } else if state.typeScope != nil && state.genScope != nil {
-            state.filteredPokedexList = state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
-                return (state.genScope!.pokemonList?.contains(pokemon))! && (state.typeScope!.pokemonList?.contains(pokemon))!
-            })
-            state.isFiltering = true
         } else {
-            state.filteredPokedexList = state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
-                return (state.genScope!.pokemonList?.contains(pokemon))!
-            })
             state.isFiltering = true
         }
+        state.filteredPokedexList = sortPokedex(state: state)
     default:
         break
     }
     
     return state
+}
+
+fileprivate func sortPokedex(state: PokedexListState) -> [PokemonId] {
+    if state.typeScope != nil && state.genScope != nil {
+        return state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
+            return (state.genScope!.pokemonList?.contains(pokemon))! && (state.typeScope!.pokemonList?.contains(pokemon))!
+        })
+    } else if state.typeScope != nil {
+        return state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
+            return (state.typeScope!.pokemonList?.contains(pokemon))!
+        })
+    } else if state.genScope != nil {
+        return state.pokedexList.filter({( pokemon : PokemonId) -> Bool in
+            return (state.genScope!.pokemonList?.contains(pokemon))!
+        })
+    } else {
+        return state.pokedexList
+    }
 }

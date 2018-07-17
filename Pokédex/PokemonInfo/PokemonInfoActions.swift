@@ -9,17 +9,14 @@
 import Foundation
 import ReSwift
 
-// Called from PokedexListViewController when Pokemon is selected
 struct SelectPokemonIdAction: Action {
     let selectedPokemonId: PokemonId
 }
 
-// Called after fetching Pokemon
 struct UpdatePokemonAction: Action {
     let selectedPokemon: Pokemon!
 }
 
-// Called after fetching Pokemon
 struct AppendPokemonInfoList: Action {
     let pokemon: Pokemon
 }
