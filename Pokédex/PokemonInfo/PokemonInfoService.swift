@@ -28,7 +28,7 @@ class PokemonInfoService {
                 if success {
                     print("PokemonInfoService: Pokemon fetched from API")
                     pokemon = try! context.fetch(fetchRequest)
-                    store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon[0]))
+                    store.dispatch(UpdatePokemonAction(pokemon: pokemon[0]))
                     store.dispatch(AppendPokemonInfoList(pokemon: pokemon[0]))
                     completion(true)
                 } else {
@@ -38,7 +38,7 @@ class PokemonInfoService {
             })
         } else {
             print("PokemonInfoService: Pokemon fetched from CoreData")
-            store.dispatch(UpdatePokemonAction(selectedPokemon: pokemon[0]))
+            store.dispatch(UpdatePokemonAction(pokemon: pokemon[0]))
             store.dispatch(AppendPokemonInfoList(pokemon: pokemon[0]))
             completion(true)
         }

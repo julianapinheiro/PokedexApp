@@ -193,6 +193,18 @@ extension PokedexCoreDataTests {
             mockPersistentContainer.viewContext.delete(obj)
         }
         
+        fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Type")
+        objs = try! mockPersistentContainer.viewContext.fetch(fetchRequest)
+        for case let obj as NSManagedObject in objs {
+            mockPersistentContainer.viewContext.delete(obj)
+        }
+        
+        fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Generation")
+        objs = try! mockPersistentContainer.viewContext.fetch(fetchRequest)
+        for case let obj as NSManagedObject in objs {
+            mockPersistentContainer.viewContext.delete(obj)
+        }
+        
         try! mockPersistentContainer.viewContext.save()
         
     }

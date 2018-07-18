@@ -204,7 +204,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             return
         } else {
             let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![0]} )
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
+            store.dispatch(SelectPokemonIdAction(pokemon: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
     }
@@ -216,7 +216,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             return
         } else {
             let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![1]} )
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
+            store.dispatch(SelectPokemonIdAction(pokemon: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
     }
@@ -228,13 +228,13 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
             return
         } else {
             let evo = store.state.pokedexListState.pokedexList.first(where: { $0.id == pokemon.evolutionChain![2]} )
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: evo!))
+            store.dispatch(SelectPokemonIdAction(pokemon: evo!))
             performSegue(withIdentifier: "showForm", sender: nil)
         }
     }
     
     @IBAction func back(_ sender: Any) {
-        store.dispatch(UpdatePokemonAction(selectedPokemon: nil))
+        store.dispatch(UpdatePokemonAction(pokemon: nil))
         self.dismiss(animated: true, completion: nil)
     }
     

@@ -10,11 +10,11 @@ import Foundation
 import ReSwift
 
 struct SelectPokemonIdAction: Action {
-    let selectedPokemonId: PokemonId
+    let pokemon: PokemonId?
 }
 
 struct UpdatePokemonAction: Action {
-    let selectedPokemon: Pokemon!
+    let pokemon: Pokemon?
 }
 
 struct AppendPokemonInfoList: Action {

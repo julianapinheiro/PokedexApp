@@ -9,26 +9,50 @@
 import Foundation
 import ReSwift
 
-func pokemonInfoReducer(action: Action, state: PokemonInfoState) -> PokemonInfoState {
-    var state = state
+struct PokemonInfoReducer {
+    typealias ReducerStateType = PokemonInfoState
     
-    switch action {
+    func handleAction(action: Action, state: PokemonInfoState?) -> PokemonInfoState {
+        if state == nil {
+            return PokemonInfoState()
+        }
         
-    case let action as SelectPokemonIdAction:
-        state.selectedPokemonId = action.selectedPokemonId
-        
-    case let action as UpdatePokemonAction:
-        state.selectedPokemon = action.selectedPokemon
-    
-    case let action as AppendPokemonInfoList:
-        state.pokemonInfoList.append(action.pokemon)
-    
-    case let action as SetPokemonInfoList:
-        state.pokemonInfoList = action.list
-
-    default:
-        break
+        switch action {
+        case let action as SelectPokemonIdAction:
+            return selectPokemonId(state!, action)
+        case let action as UpdatePokemonAction:
+            return updatePokemon(state!, action)
+        case let action as AppendPokemonInfoList:
+            return appendPokemonInfoList(state!, action)
+        case let action as SetPokemonInfoList:
+            return setPokemonInfoList(state!, action)
+        default:
+            return state!
+        }
     }
     
-    return state
+    fileprivate func selectPokemonId(_ state: PokemonInfoState, _ action: SelectPokemonIdAction) -> PokemonInfoState {
+        var state = state
+        state.selectedPokemonId = action.pokemon
+        return state
+    }
+    
+    fileprivate func updatePokemon(_ state: PokemonInfoState, _ action: UpdatePokemonAction) -> PokemonInfoState {
+        var state = state
+        state.selectedPokemon = action.pokemon
+        return state
+    }
+    
+    fileprivate func appendPokemonInfoList(_ state: PokemonInfoState, _ action: AppendPokemonInfoList) -> PokemonInfoState {
+        var state = state
+        state.pokemonInfoList.append(action.pokemon)
+        return state
+    }
+    
+    fileprivate func setPokemonInfoList(_ state: PokemonInfoState, _ action: SetPokemonInfoList) -> PokemonInfoState {
+        var state = state
+        state.pokemonInfoList = action.list
+        return state
+    }
+    
 }

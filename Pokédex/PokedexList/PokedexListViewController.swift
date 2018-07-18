@@ -159,7 +159,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
             } else {
                 poke = pokedexList[(indexPath as NSIndexPath).row]
             }
-            store.dispatch(SelectPokemonIdAction(selectedPokemonId: poke))
+            store.dispatch(SelectPokemonIdAction(pokemon: poke))
             if searchController.isActive == true {
                 self.searchController.dismiss(animated: false)
             }

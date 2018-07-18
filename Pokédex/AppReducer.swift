@@ -10,8 +10,13 @@ import ReSwift
 
 func appReducer(action: Action, state: AppState?) -> AppState {
     let state = state ?? AppState()
+    
+    let pokedexListReducer = PokedexListReducer()
+    let pokemonInfoReducer = PokemonInfoReducer()
+    
     return AppState(
-        pokedexListState: pokedexListReducer(action: action, state: state.pokedexListState),
-        pokemonInfoState: pokemonInfoReducer(action: action, state: state.pokemonInfoState)
+        pokedexListState: pokedexListReducer.handleAction(action: action, state: state.pokedexListState),
+        pokemonInfoState: pokemonInfoReducer.handleAction(action: action, state: state.pokemonInfoState)
     )
 }
+
