@@ -1,0 +1,22 @@
+PODS:
+  - Alamofire (4.7.2)
+  - AlamofireImage (3.3.1):
+    - Alamofire (~> 4.5)
+  - ObjectMapper (3.3.0)
+  - ReSwift (4.0.1)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.7)
+  - AlamofireImage (~> 3.3)
+  - ObjectMapper (~> 3.3)
+  - ReSwift
+
+SPEC CHECKSUMS:
+  Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  AlamofireImage: 3b35b586853abaf94ca1250f4e94cff3c21a4c0d
+  ObjectMapper: b612bf8c8e99c4dc0bb6013a51f7c27966ed5da9
+  ReSwift: f4012c613e13da7398827fe5aebdb938eaed40a3
+
+PODFILE CHECKSUM: 2ac65a02f28205189029dc6bab5899dcdb34c82c
+
+COCOAPODS: 1.4.0
