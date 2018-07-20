@@ -30,8 +30,9 @@ class PokedexListService {
     static let shared = PokedexListService(serviceStore: store)
     
     func loadData(completion: @escaping (_ success: Bool) -> Void) {
-        startPokemon()
-        startPokedex(completion: { success in
+        startPokemon() // TODO: Aqui entendo que você não prcisa se preocupar em caso der erro, mas como você pode deixar esse código a prova de erro nos fetchs ?
+        startPokedex(completion: { success in // TODO: não tinha visto essa forma ainda de resolver o encadeamento de fetch, mas funciona :D
+                // TODO: no Sismob-iOS usamos o PromiseKit, esse completion que você usa pra encadear seria substituido por ".then", que é um completion handler com uns detalhes, assim como .recover, .when e por ai vai, da uma olhada na doc depois :)
             if success {
                 self.startTypes(completion: { success in
                     if success {
@@ -65,7 +66,7 @@ class PokedexListService {
         let fetchRequest:NSFetchRequest<Type> = Type.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        var typesList = try! context.fetch(fetchRequest)
+        var typesList = try! context.fetch(fetchRequest) // TODO: Usar "do -> catch" para pegar a possível exception.
 
         // If not found in CoreData, fetch from API and save in CoreData
         if typesList.count < typesSize {
@@ -254,7 +255,7 @@ class PokedexListService {
     
     func fetchGenerations(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
         let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(id)).appendingPathComponent("/")
-        Alamofire.request(url!).responseJSON(completionHandler: { response in
+        Alamofire.request(url!).responseJSON(completionHandler: { response in  // TODO: só force o unwrap se você estiver 100% de certeza que não seraá nil, na dúvida faz um guard let.
             if (response.result.error != nil) {
                 print(response.result.error!)
                 completion(false)

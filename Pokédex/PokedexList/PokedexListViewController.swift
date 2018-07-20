@@ -129,7 +129,8 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Private instance methods
     
     func isSearching() -> Bool {
-        return (searchController.isActive && !searchBarIsEmpty())
+        return (searchController.isActive && !searchBarIsEmpty()) // TODO: o fluxo tem que passar pelo estado do PokedexList, quando o usuário clica pra comecar a procurar, você dispara uma ação
+        // o reducer muda uma flag no estado e no new state você observa essa flag pra mudar o layout. Basicamente, não se mantem flags a respeito do estado da tela no ViewController.
     }
     
     func searchBarIsEmpty() -> Bool {
