@@ -10,6 +10,7 @@ target 'Pokédex' do
   pod 'ObjectMapper', '~> 3.3'
   pod 'Alamofire', '~> 4.7'
   pod 'AlamofireImage', '~> 3.3'
+  pod "PromiseKit/CorePromise", "~> 6.0"
 
 end
 

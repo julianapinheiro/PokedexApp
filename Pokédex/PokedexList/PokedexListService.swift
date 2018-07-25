@@ -10,6 +10,7 @@ import Alamofire
 import ObjectMapper
 import CoreData
 import ReSwift
+import PromiseKit
 
 class PokedexListService {
     
@@ -19,6 +20,9 @@ class PokedexListService {
     let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
     let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
+    enum PokedexListServiceError: Error {
+        case JSONError
+    }
     
     // Store
     var serviceStore: Store<AppState>
@@ -31,20 +35,17 @@ class PokedexListService {
     
     func loadData(completion: @escaping (_ success: Bool) -> Void) {
         startPokemon()
-        startPokedex(completion: { success in // TODO: não tinha visto essa forma ainda de resolver o encadeamento de fetch, mas funciona :D
-                // TODO: no Sismob-iOS usamos o PromiseKit, esse completion que você usa pra encadear seria substituido por ".then", que é um completion handler com uns detalhes, assim como .recover, .when e por ai vai, da uma olhada na doc depois :)
-            if success {
-                self.startTypes(completion: { success in
-                    if success {
-                        self.startGenerations(completion: { success in
-                            if success {
-                                completion(true)
-                            }
-                        })
-                    }
-                })
-            }
-        })
+        firstly {
+            startPokedex()
+        }.then { _ in
+            self.startTypes()
+        }.then { _ in
+            self.startGenerations()
+        }.done { _ in
+            completion(true)
+        }.catch { _ in
+            print("PokedexListService: Error loading data")
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -57,136 +58,131 @@ class PokedexListService {
         let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         
-        do{
+        do {
             let pokedexFetched = try context.fetch(fetchRequest)
             pokedexInfo = pokedexFetched
-            
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
         }
-        
-        //let pokedexInfoList = try! context.fetch(listFetchRequest)
+
         print("PokedexListService: fetched \(pokedexInfo.count) Pokemon from CoreData")
         serviceStore.dispatch(SetPokemonInfoList(list: pokedexInfo))
     }
     
-    func startTypes(completion: @escaping (_ success: Bool) -> Void) {
-        // Try and fetch Type from CoreData
-        var typesList:[Type] = []
-        let fetchRequest:NSFetchRequest<Type> = Type.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do{
-            let typesFetched = try context.fetch(fetchRequest)
-            typesList = typesFetched
-
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-        //var typesList = try! context.fetch(fetchRequest) // TODO: Usar "do -> catch" para pegar a possível exception.
-
-        // If not found in CoreData, fetch from API and save in CoreData
-        if typesList.count < typesSize {
-            fetchTypes(1, completion: { success in
-                if success {
-                    print("PokedexListService: Types fetched from API")
-                    //typesList = try! context.fetch(fetchRequest)
-                    do{
-                        let typesFetched = try context.fetch(fetchRequest)
-                        typesList = typesFetched
-                        
-                    } catch let error as NSError {
-                        print("Could not fetch \(error), \(error.userInfo)")
-                    }
-                    self.serviceStore.dispatch(UpdateTypesListAction(list: typesList))
-                    completion(true)
-                } else {
-                    print("PokedexListService: Error fetching types from API")
-                    completion(true)
-                }
-            })
-        } else {
-            print("PokedexListService: Types fetched from CoreData")
-            serviceStore.dispatch(UpdateTypesListAction(list: typesList))
-            completion(true)
-        }
-    }
-    
-    func startGenerations(completion: @escaping (_ success: Bool) -> Void) {
-        // Try and fetch Generations from CoreData
-        var generations: [Generation] = []
-        let fetchRequest:NSFetchRequest<Generation> = Generation.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do{
-            let gensFetched = try context.fetch(fetchRequest)
-            generations = gensFetched
-            
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-        //var generations = try! context.fetch(fetchRequest)
-        
-        // If not found in CoreData, fetch from API and save in CoreData
-        if generations.count < gensSize {
-            fetchGenerations(1, completion: { success in
-                if success {
-                    print("PokedexListService: Generations fetched from API")
-                    generations = try! context.fetch(fetchRequest)
-                    self.serviceStore.dispatch(UpdateGenListAction(list: generations))
-                    completion(true)
-                } else {
-                    print("PokedexListService: Error fetching generations from API")
-                    completion(true)
-                }
-            })
-        } else {
-            print("PokedexListService: Generations fetched from CoreData")
-            serviceStore.dispatch(UpdateGenListAction(list: generations))
-            completion(true)
-        }
-    }
-    
-    func startPokedex(completion: @escaping (_ success: Bool) -> Void) {
+    func startPokedex() -> Promise<Bool> {
         // Try and fetch PokemonId from CoreData
-        var pokedex: [PokemonId] = []
-        let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        do{
-            let pokedexFetched = try context.fetch(fetchRequest)
-            pokedex = pokedexFetched
+        return Promise<Bool> { seal in
+            var pokedex: [PokemonId] = []
+            let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
+            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            do {
+                let pokedexFetched = try context.fetch(fetchRequest)
+                pokedex = pokedexFetched
+            } catch let error as NSError {
+                print("Could not fetch \(error), \(error.userInfo)")
+            }
             
-        } catch let error as NSError {
-            print("Could not fetch \(error), \(error.userInfo)")
-        }
-        
-        // If not found in CoreData, fetch from API and save in CoreData
-        if pokedex.count < pokedexSize {
-            fetchPokedex (objectContext: context, {success in
-                if success {
+            // If not found in CoreData, fetch from API and save in CoreData
+            if pokedex.count < pokedexSize {
+                fetchPokedex(objectContext: context).done { _ in
                     print("PokedexListService: Pokedex fetched from API")
-                    //pokedex = try! context.fetch(fetchRequest)
-                    do{
+                    do {
                         let pokedexFetched = try context.fetch(fetchRequest)
                         pokedex = pokedexFetched
-                        
                     } catch let error as NSError {
                         print("Could not fetch \(error), \(error.userInfo)")
                     }
                     self.serviceStore.dispatch(UpdatePokedexListAction(list: pokedex))
                     self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
-                    completion(true)
-                } else {
+                    seal.fulfill(true)
+                }.catch { _ in
                     print("PokedexListService: Error fetching Pokedex from API")
-                    completion(true)
+                    seal.fulfill(true)
                 }
-            })
-        } else {
-            print("PokedexListService: Pokedex fetched from CoreData")
-            serviceStore.dispatch(UpdatePokedexListAction(list: pokedex))
-            self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
-            completion(true)
+            } else {
+                print("PokedexListService: Pokedex fetched from CoreData")
+                serviceStore.dispatch(UpdatePokedexListAction(list: pokedex))
+                self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
+                seal.fulfill(true)
+            }
+        }
+    }
+    
+    func startTypes() -> Promise<Bool> {
+        // Try and fetch Type from CoreData
+        return Promise<Bool> { seal in
+            var typesList:[Type] = []
+            let fetchRequest:NSFetchRequest<Type> = Type.fetchRequest()
+            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            do {
+                let typesFetched = try context.fetch(fetchRequest)
+                typesList = typesFetched
+            } catch let error as NSError {
+                print("Could not fetch \(error), \(error.userInfo)")
+            }
+            
+            // If not found in CoreData, fetch from API and save in CoreData
+            if typesList.count < typesSize {
+                fetchTypes(1).done { _ in
+                    print("PokedexListService: Types fetched from API")
+                    do {
+                        let typesFetched = try context.fetch(fetchRequest)
+                        typesList = typesFetched
+                    } catch let error as NSError {
+                        print("Could not fetch \(error), \(error.userInfo)")
+                    }
+                    self.serviceStore.dispatch(UpdateTypesListAction(list: typesList))
+                    seal.fulfill(true)
+                }.catch { _ in
+                    print("PokedexListService: Error fetching types from API")
+                    seal.fulfill(true)
+                }
+            } else {
+                print("PokedexListService: Types fetched from CoreData")
+                serviceStore.dispatch(UpdateTypesListAction(list: typesList))
+                seal.fulfill(true)
+            }
+        }
+    }
+    
+    func startGenerations() -> Promise<Bool> {
+        // Try and fetch Generations from CoreData
+        return Promise<Bool> { seal in
+            var generations: [Generation] = []
+            let fetchRequest:NSFetchRequest<Generation> = Generation.fetchRequest()
+            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            do{
+                let gensFetched = try context.fetch(fetchRequest)
+                generations = gensFetched
+                
+            } catch let error as NSError {
+                print("Could not fetch \(error), \(error.userInfo)")
+            }
+            
+            // If not found in CoreData, fetch from API and save in CoreData
+            if generations.count < gensSize {
+                fetchGenerations(1).done { _ in
+                    print("PokedexListService: Generations fetched from API")
+                    do {
+                        let gensFetched = try context.fetch(fetchRequest)
+                        generations = gensFetched
+                    } catch let error as NSError {
+                        print("Could not fetch \(error), \(error.userInfo)")
+                    }
+                    self.serviceStore.dispatch(UpdateGenListAction(list: generations))
+                    seal.fulfill(true)
+                }.catch { _ in
+                        print("PokedexListService: Error fetching types from API")
+                        seal.fulfill(true)
+                }
+            } else {
+                print("PokedexListService: Generations fetched from CoreData")
+                serviceStore.dispatch(UpdateGenListAction(list: generations))
+                seal.fulfill(true)
+            }
         }
     }
     
@@ -220,25 +216,96 @@ class PokedexListService {
     
     // -- Fetch from pokemon/limit?=802
     // Um request cria todos os objetos PokemonId :D
-    func fetchPokedex(objectContext: NSManagedObjectContext, _ completion: @escaping (_ success: Bool) -> Void) {
-        guard let url = URL(string: root + "pokemon/?limit=" + String(pokedexSize)) else {
-            return
-        }
-        Alamofire.request(url).responseJSON(completionHandler: { response in
-            switch response.result {
-            case .success:
-                guard let json = response.result.value as! [String: Any]? else {
-                    completion(false)
-                    return
-                }
-                self.createPokedexFromJSON(json, objectContext)
-                completion(true)
-            case .failure(let error):
-                print(error)
-                completion(false)
+    func fetchPokedex(objectContext: NSManagedObjectContext) -> Promise<Bool> {
+        return Promise<Bool> { seal in
+            guard let url = URL(string: root + "pokemon/?limit=" + String(pokedexSize)) else {
+                seal.fulfill(false)
                 return
             }
-        })
+            Alamofire.request(url).responseJSON(completionHandler: { response in
+                switch response.result {
+                case .success:
+                    guard let json = response.result.value as! [String: Any]? else {
+                        seal.reject(PokedexListServiceError.JSONError)
+                        return
+                    }
+                    self.createPokedexFromJSON(json, objectContext)
+                    seal.fulfill(true)
+                case .failure(let error):
+                    print(error)
+                    seal.reject(error)
+                }
+            })
+            
+        }
+    }
+    
+    private var typeIndex = 1
+    
+    func fetchTypes(_ id: Int) -> Promise<Bool> {
+        return Promise<Bool> { seal in
+            guard let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(id)).appendingPathComponent("/") else {
+                return
+            }
+            Alamofire.request(url).responseJSON(completionHandler: { response in
+                switch response.result {
+                case .success:
+                    guard let json = response.result.value as! [String: Any]? else {
+                        seal.reject(PokedexListServiceError.JSONError)
+                        return
+                    }
+                    self.createTypeFromJSON(json, context)
+                    //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
+                    if self.typeIndex < self.typesSize {
+                        self.typeIndex += 1
+                        self.fetchTypes(self.typeIndex).done { _ in
+                            seal.fulfill(true)
+                        }.catch { _ in
+                                print("PokedexListService: Error fetching types from API")
+                                seal.fulfill(true)
+                        }
+                    }
+                    seal.fulfill(true)
+                case .failure(let error):
+                    print(error)
+                    seal.reject(error)
+                }
+            })
+        }
+    }
+    
+    private var genIndex = 1
+    
+    func fetchGenerations(_ id: Int)  -> Promise<Bool> {
+        return Promise<Bool> { seal in
+            guard let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(id)).appendingPathComponent("/") else {
+                return
+            }
+            Alamofire.request(url).responseJSON(completionHandler: { response in
+                switch response.result {
+                case .success:
+                    guard let json = response.result.value as! [String: Any]? else {
+                        seal.reject(PokedexListServiceError.JSONError)
+                        return
+                    }
+                    self.createGenerationFromJSON(json, context)
+                    //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
+                    if self.genIndex < self.gensSize {
+                        self.genIndex += 1
+                        self.fetchGenerations(self.genIndex).done { _ in
+                            seal.fulfill(true)
+                        }.catch { _ in
+                            print("PokedexListService: Error fetching generations from API")
+                            seal.fulfill(true)
+                        }
+                    }
+                    seal.fulfill(true)
+                case .failure(let error):
+                    print(error)
+                    seal.reject(error)
+                }
+            })
+        }
     }
     
     // -- Fetch Sprite from API
@@ -273,66 +340,6 @@ class PokedexListService {
         try! pngImage?.write(to: filePath, options: .atomic)
         //print("Saving Sprite for id=" + String(pokemonId))
         completion(true)
-    }
-    
-    private var typeIndex = 1
-    
-    func fetchTypes(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
-        guard let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(id)).appendingPathComponent("/") else {
-            return
-        }
-        Alamofire.request(url).responseJSON(completionHandler: { response in
-            if (response.result.error != nil) {
-                print(response.result.error!)
-                completion(false)
-                return
-            }
-            if let json = response.result.value as! [String: Any]? {
-                self.createTypeFromJSON(json, context)
-                //print("PokedexListService: Fetched and saved Type id=\(type!.id) name=\(type!.name!)")
-                if self.typeIndex < self.typesSize {
-                    self.typeIndex += 1
-                    self.fetchTypes(self.typeIndex, completion: { success in
-                        if success {
-                            completion(true)
-                        }
-                    })
-                } else {
-                    //print("PokedexListService: fetched all types from API")
-                    completion(true)
-                }
-            }
-        })
-    }
-    
-    private var genIndex = 1
-    
-    func fetchGenerations(_ id: Int, completion: @escaping (_ success: Bool) -> Void) {
-        guard let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(id)).appendingPathComponent("/") else {
-            return
-        }
-        Alamofire.request(url).responseJSON(completionHandler: { response in
-            if (response.result.error != nil) {
-                print(response.result.error!)
-                completion(false)
-                return
-            }
-            if let json = response.result.value as! [String: Any]? {
-                self.createGenerationFromJSON(json, context)
-                //print("PokedexListService: Fetched and saved Generation id=\(gen?.id) name=\(gen?.name!)")
-                if self.genIndex < self.gensSize {
-                    self.genIndex += 1
-                    self.fetchGenerations(self.genIndex, completion: { success in
-                        if success {
-                            completion(true)
-                        }
-                    })
-                } else {
-                    //print("PokedexListService: fetched all generation from API")
-                    completion(true)
-                }
-            }
-        })
     }
     
     // HELPER
