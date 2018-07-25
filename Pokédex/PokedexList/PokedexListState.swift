@@ -19,6 +19,7 @@ struct PokedexListState {
     var typeScope:Type?
     var genScope:Generation?
     var isFiltering:Bool
+    var isSearching:Bool
 
     init() {
         self.pokedexList = []
@@ -30,5 +31,6 @@ struct PokedexListState {
         self.typeScope = nil
         self.genScope = nil
         self.isFiltering = false
+        self.isSearching = false
     }
 }

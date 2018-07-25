@@ -30,6 +30,8 @@ struct PokedexListReducer {
             return setTypeScope(state!, action)
         case let action as SetGenScopeAction:
             return setGenScope(state!, action)
+        case let action as SetIsSearching:
+            return setIsSearching(state!, action)
         default:
             return state!
         }
@@ -80,6 +82,15 @@ struct PokedexListReducer {
             state.isFiltering = true
         }
         state.filteredPokedexList = sortPokedex(state: state)
+        return state
+    }
+    
+    fileprivate func setIsSearching(_ state: PokedexListState, _ action: SetIsSearching) -> PokedexListState {
+        var state = state
+        state.isSearching = action.isSearching
+        if !action.isSearching {
+            state.filteredPokedexList = sortPokedex(state: state)
+        }
         return state
     }
     
