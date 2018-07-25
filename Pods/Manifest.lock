@@ -1,0 +1,25 @@
+PODS:
+  - Alamofire (4.7.2)
+  - AlamofireImage (3.3.1):
+    - Alamofire (~> 4.5)
+  - ObjectMapper (3.3.0)
+  - PromiseKit/CorePromise (6.3.3)
+  - ReSwift (4.0.1)
+
+DEPENDENCIES:
+  - Alamofire (~> 4.7)
+  - AlamofireImage (~> 3.3)
+  - ObjectMapper (~> 3.3)
+  - PromiseKit/CorePromise (~> 6.0)
+  - ReSwift
+
+SPEC CHECKSUMS:
+  Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  AlamofireImage: 3b35b586853abaf94ca1250f4e94cff3c21a4c0d
+  ObjectMapper: b612bf8c8e99c4dc0bb6013a51f7c27966ed5da9
+  PromiseKit: e168626994ae29c38b51252a8d1b0a561fd3f2c7
+  ReSwift: f4012c613e13da7398827fe5aebdb938eaed40a3
+
+PODFILE CHECKSUM: e2ebdcd6e1cd7a9c6399253f0ef2d397c91d89ee
+
+COCOAPODS: 1.4.0
