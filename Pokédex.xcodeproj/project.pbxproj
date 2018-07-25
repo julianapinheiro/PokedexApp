@@ -419,6 +419,7 @@
 				"${BUILT_PRODUCTS_DIR}/Alamofire-iOS10.3/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/AlamofireImage-iOS10.3/AlamofireImage.framework",
 				"${BUILT_PRODUCTS_DIR}/ObjectMapper-iOS10.3/ObjectMapper.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/ReSwift-iOS10.3/ReSwift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -426,6 +427,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AlamofireImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ObjectMapper.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReSwift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -688,7 +690,7 @@
 				INFOPLIST_FILE = "Pokédex/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bridge.Poke-dex";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bridge.Pokedex;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
@@ -707,7 +709,7 @@
 				INFOPLIST_FILE = "Pokédex/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.bridge.Poke-dex";
+				PRODUCT_BUNDLE_IDENTIFIER = com.bridge.Pokedex;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
