@@ -40,5 +40,3 @@ struct SetIsSearchingAction: Action {
 struct SetSearchWordAction: Action {
     let searchWord: String
 }
-
-

@@ -12,9 +12,13 @@ import ObjectMapper
 import CoreData
 
 class PokemonInfoService {
-    let root:String = "http://pokeapi.co/api/v2/"
     
+    // MARK: Properties
+    let root:String = "http://pokeapi.co/api/v2/"
     static let shared = PokemonInfoService()
+    
+    // -------------------------------------------------------------------------
+    // MARK: - Init object method
     
     func loadPokemon(_ id: Int, _ completion: @escaping (_ success: Bool) -> Void) {
         // Try and fetch Pokemon from CoreData
@@ -44,6 +48,9 @@ class PokemonInfoService {
         }
     }
     
+    // -------------------------------------------------------------------------
+    // MARK: - Create object from JSON method
+    
     func createPokemonFromJSON(id: Int, _ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
         let pokemon = Mapper<Pokemon>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
         pokemon!.id = Int16(id)
@@ -53,6 +60,9 @@ class PokemonInfoService {
         pokemon!.pokemonId = pokemonId[0]
         try! objectContext.save()
     }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - Fetch Method
     
     // Fetch info from pokemon/id and pokemon-species/id endpoints
     // Merges both json and creates Pokemon object
@@ -104,4 +114,3 @@ class PokemonInfoService {
         
     }
 }
-

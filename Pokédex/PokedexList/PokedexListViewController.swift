@@ -18,40 +18,47 @@ class PokedexListTableCell: UITableViewCell {
 }
 
 class PokedexListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, StoreSubscriber {
+    
+    // MARK: IBOutlets
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: Properties
     let searchController = UISearchController(searchResultsController: nil)
-    
     var isFiltering = false
     var isSearching = false
     var pokedexList = [PokemonId]()
     var filteredPokedexList = [PokemonId]()
     
+    // -------------------------------------------------------------------------
+    // MARK: - ViewController lifecycle methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // UI Setup
-        let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
-        barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
-        view.addSubview(barView)
-        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
-        
+        setupUI()
         setUpSearchController()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         store.subscribe(self) { subcription in
-            subcription
-                .select { state in state.pokedexListState }
+            subcription.select { state in state.pokedexListState }
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         store.unsubscribe(self)
+    }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - UI methods
+    
+    func setupUI() {
+        let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
+        barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
+        view.addSubview(barView)
+        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
     }
     
     func setUpSearchController() {
@@ -61,18 +68,23 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchBar.placeholder = "Search Pokémon by name"
         searchController.searchBar.delegate = self
         tableView.tableHeaderView = searchController.searchBar
-        self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
+        hideSearchBar()
+    }
+    
+    func hideSearchBar() {
+        tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
         definesPresentationContext = true
     }
     
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
+    
     func newState(state: PokedexListState) {
-        self.pokedexList = state.pokedexList
-        self.filteredPokedexList = state.filteredPokedexList
-        self.isFiltering = state.isFiltering
-        self.isSearching = state.isSearching
-        self.tableView.reloadData()
+        pokedexList = state.pokedexList
+        filteredPokedexList = state.filteredPokedexList
+        isFiltering = state.isFiltering
+        isSearching = state.isSearching
+        tableView.reloadData()
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -136,27 +148,28 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
             }
             store.dispatch(SelectPokemonIdAction(pokemon: poke))
             if searchController.isActive == true {
-                self.searchController.dismiss(animated: false)
+                searchController.dismiss(animated: false)
             }
         }
     }
 }
 
 extension PokedexListViewController: UISearchResultsUpdating {
-    // MARK: - UISearchResultsUpdating Delegate
+    // MARK: UISearchResultsUpdating Delegate
+    
     func updateSearchResults(for searchController: UISearchController) {
         filterContentForSearchText(searchController.searchBar.text!)
     }
 }
 
 extension PokedexListViewController: UISearchBarDelegate {
+    // MARK: UISearchBar Delegate
+    
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         store.dispatch(SetIsSearchingAction(isSearching: true))
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        store.dispatch(SetIsSearchingAction(isSearching: false))
-        self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
-        definesPresentationContext = true
+        hideSearchBar()
     }
 }

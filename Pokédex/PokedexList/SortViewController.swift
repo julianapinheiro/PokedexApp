@@ -11,22 +11,22 @@ import ReSwift
 
 class SortViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, StoreSubscriber {
     
+    // MARK: IBOutlets
     @IBOutlet weak var navBar: UINavigationBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     
+    // MARK: Properties
     var typesList = [Type?]()
     var genList = [Generation?]()
     var selectedType: Type? = nil
     var selectedGen: Generation? = nil
     
+    // -------------------------------------------------------------------------
+    // MARK: - ViewController lifecycle methods
+    
     override func viewDidLoad() {
         setLoadingIndicator(false)
-        // UI Setup
-        let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
-        barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
-        view.addSubview(barView)
-        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -43,20 +43,40 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     }
     
     // -------------------------------------------------------------------------
+    // MARK: - UI methods
+    
+    func setupUI() {
+        let barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
+        barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
+        view.addSubview(barView)
+        navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
+    }
+    
+    func setLoadingIndicator(_ start: Bool) {
+        loadingIndicator.isHidden = !start
+        if start {
+            loadingIndicator.startAnimating()
+        } else {
+            loadingIndicator.stopAnimating()
+        }
+    }
+    
+    // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
+    
     func newState(state: PokedexListState) {
         if !store.state.pokedexListState.typesList.isEmpty {
-            self.typesList = store.state.pokedexListState.typesList
-            self.typesList.insert(nil, at: 0)
-            self.tableView.reloadData()
+            typesList = store.state.pokedexListState.typesList
+            typesList.insert(nil, at: 0)
+            tableView.reloadData()
         }
         if !store.state.pokedexListState.genList.isEmpty {
-            self.genList = store.state.pokedexListState.genList
-            self.genList.insert(nil, at: 0)
-            self.tableView.reloadData()
+            genList = store.state.pokedexListState.genList
+            genList.insert(nil, at: 0)
+            tableView.reloadData()
         }
-        self.selectedType = store.state.pokedexListState.typeScope
-        self.selectedGen = store.state.pokedexListState.genScope
+        selectedType = store.state.pokedexListState.typeScope
+        selectedGen = store.state.pokedexListState.genScope
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -64,7 +84,6 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // -------------------------------------------------------------------------
     // MARK: - Table view data source
 
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section
         {
@@ -132,27 +151,21 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
         case 0:
             setLoadingIndicator(true)
             store.dispatch(SetTypeScopeAction(type: typesList[(indexPath as NSIndexPath).row]))
-            self.dismiss(animated: true, completion: nil)
+            dismiss(animated: true, completion: nil)
         case 1:
             setLoadingIndicator(true)
             store.dispatch(SetGenScopeAction(gen: genList[(indexPath as NSIndexPath).row]))
-            self.dismiss(animated: true, completion: nil)
+            dismiss(animated: true, completion: nil)
         default:
-            self.dismiss(animated: true, completion: nil)
+            dismiss(animated: true, completion: nil)
         }
         
     }
     
-    func setLoadingIndicator(_ start: Bool) {
-        loadingIndicator.isHidden = !start
-        if start {
-            loadingIndicator.startAnimating()
-        } else {
-            loadingIndicator.stopAnimating()
-        }
-    }
+    // -------------------------------------------------------------------------
+    // MARK: - IBActions
     
     @IBAction func back(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 }

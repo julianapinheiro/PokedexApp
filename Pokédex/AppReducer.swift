@@ -19,4 +19,3 @@ func appReducer(action: Action, state: AppState?) -> AppState {
         pokemonInfoState: pokemonInfoReducer.handleAction(action: action, state: state.pokemonInfoState)
     )
 }
-

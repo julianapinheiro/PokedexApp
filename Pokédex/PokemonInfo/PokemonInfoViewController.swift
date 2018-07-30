@@ -47,17 +47,39 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     
     @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
     @IBOutlet weak var evoBarView: UIView!
-    var barView: UIView!
     
     @IBOutlet weak var moreEvoStackView: UIStackView!
     @IBOutlet weak var firstFormImageView: UIImageView!
     @IBOutlet weak var secondFormImageView: UIImageView!
     @IBOutlet weak var thirdFormImageView: UIImageView!
     
+    // MARK: Properties
+    var barView: UIView!
+    var pokemonId: PokemonId!   // only name and id
+    var pokemon: Pokemon!       // info
+    
+    // -------------------------------------------------------------------------
+    // MARK: - ViewController lifecycle methods
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        store.subscribe(self) { state in
+            state.select { state in (state.pokemonInfoState) }
+        }
+        setupUI()
+        loadPokemon()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        store.unsubscribe(self)
+    }
+    
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
     
     typealias StoreSubscriberStateType = PokemonInfoState
+    
     func newState(state: PokemonInfoState) {
         if state.selectedPokemon != nil {
             pokemon = state.selectedPokemon
@@ -68,24 +90,8 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
         }
     }
     
-    var pokemonId: PokemonId!   // only name and id
-    var pokemon: Pokemon!       // info
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        store.subscribe(self) { state in
-            state.select { state in (state.pokemonInfoState) }
-        }
-        
-        setupUI()
-        loadPokemon()
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        store.unsubscribe(self)
-    }
+    // -------------------------------------------------------------------------
+    // MARK: - Load info method
     
     func loadPokemon() {
         PokemonInfoService.shared.loadPokemon(Int(pokemonId.id), { success in
@@ -102,9 +108,10 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     }
     
     // -------------------------------------------------------------------------
-    // MARK: - Set up UI functions
+    // MARK: - UI methods
     
     func setupUI() {
+        // Before Pokemon object is loaded
         barView = UIView(frame: CGRect(x:0, y:0, width:view.frame.width, height:UIApplication.shared.statusBarFrame.height))
         barView.backgroundColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
         navBar.barTintColor = UIColor(red:0.91, green:0.30, blue:0.24, alpha:1.0)
@@ -123,6 +130,7 @@ class PokemonInfoViewController: UIViewController, StoreSubscriber {
     }
     
     func reloadUI() {
+        // After Pokemon object is loaded
         loadingIndicator.isHidden = true
         textView.text = pokemon?.text_entry ?? textView.text
         

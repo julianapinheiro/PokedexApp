@@ -14,26 +14,27 @@ import PromiseKit
 
 class PokedexListService {
     
-    // API Info
+    // MARK: Properties
+    // API
     let pokedexSize:Int = 802
     let typesSize:Int = 18
     let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
     let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
+    
+    // Other
+    var serviceStore: Store<AppState>
     enum PokedexListServiceError: Error {
         case JSONError
         case PathError
     }
-    
-    // Store
-    var serviceStore: Store<AppState>
+
+    static let shared = PokedexListService(serviceStore: store)
     
     init(serviceStore: Store<AppState>) {
         self.serviceStore = serviceStore
     }
-    
-    static let shared = PokedexListService(serviceStore: store)
-    
+
     func loadData(completion: @escaping (_ success: Bool) -> Void) {
         startPokemon()
         firstly {
@@ -329,7 +330,8 @@ class PokedexListService {
         completion(true)
     }
     
-    // HELPER
+    // -------------------------------------------------------------------------
+    // MARK: - Helper Methods
     
     // Return path for Documents
     static func getDocumentsDirectory() -> URL {
@@ -338,5 +340,4 @@ class PokedexListService {
         return documentsDirectory
     }
     
-
 }

@@ -11,10 +11,16 @@ import CoreData
 import ReSwift
 
 class ViewController: UIViewController, StoreSubscriber {
+    
+    // MARK: Properties
     let pokedexListService = PokedexListService.shared
-
+    
+    // MARK: IBOutlets
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var loadingLabel: UILabel!
+    
+    // -------------------------------------------------------------------------
+    // MARK: - ViewController lifecycle methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +30,7 @@ class ViewController: UIViewController, StoreSubscriber {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         store.subscribe(self) { subcription in
-            subcription
-                .select { state in (state.pokedexListState) }
+            subcription.select { state in (state.pokedexListState) }
         }
     }
     
@@ -43,6 +48,9 @@ class ViewController: UIViewController, StoreSubscriber {
     
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
+    
+    typealias StoreSubscriberStateType = PokedexListState
+    
     func newState(state: PokedexListState) {
         if !state.pokedexList.isEmpty {
             loadingLabel.text = "Fetching Types..."
@@ -52,7 +60,8 @@ class ViewController: UIViewController, StoreSubscriber {
         }
     }
     
-    typealias StoreSubscriberStateType = PokedexListState
+    // -------------------------------------------------------------------------
+    // MARK: - Load View method
     
     func loadNextView() {
         let storyboard = UIStoryboard(name: "PokedexList", bundle: nil)
@@ -60,6 +69,4 @@ class ViewController: UIViewController, StoreSubscriber {
         present(mainViewController, animated: true, completion: nil)
     }
 
-
 }
-
