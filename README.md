@@ -7,6 +7,7 @@ Using:
 * Cocoapods
 * CoreData
 * ObjectMapper
+* PromiseKit
 * ReSwift
 
 Features:
