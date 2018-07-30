@@ -33,7 +33,12 @@ struct SetGenScopeAction: Action {
     let gen: Generation?
 }
 
-struct SetIsSearching: Action {
+struct SetIsSearchingAction: Action {
     let isSearching: Bool
 }
+
+struct SetSearchWordAction: Action {
+    let searchWord: String
+}
+
 

@@ -25,7 +25,6 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     
     var isFiltering = false
     var isSearching = false
-    var typesList = [Type]()
     var pokedexList = [PokemonId]()
     var filteredPokedexList = [PokemonId]()
     
@@ -42,23 +41,11 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         setUpSearchController()
     }
     
-    func setUpSearchController() {
-        // Setup the Search Controller
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Pokemon by name"
-        searchController.searchBar.delegate = self
-        tableView.tableHeaderView = searchController.searchBar
-        self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
-        definesPresentationContext = true
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         store.subscribe(self) { subcription in
             subcription
-                .select { state in (state.pokedexListState) }
-            //.skip(when: { pokedexListState in pokedexList.isEmpty })
+                .select { state in state.pokedexListState }
         }
     }
     
@@ -67,24 +54,25 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         store.unsubscribe(self)
     }
     
+    func setUpSearchController() {
+        // Setup the Search Controller
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Pokémon by name"
+        searchController.searchBar.delegate = self
+        tableView.tableHeaderView = searchController.searchBar
+        self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
+        definesPresentationContext = true
+    }
+    
     // -------------------------------------------------------------------------
     // MARK: - StoreSubscriber
     func newState(state: PokedexListState) {
-        if (!state.pokedexList.isEmpty && state.pokedexList != self.pokedexList) {
-            self.pokedexList = state.pokedexList
-            tableView.reloadData()
-
-        }
-        if !state.filteredPokedexList.isEmpty {
-            self.filteredPokedexList = state.filteredPokedexList
-            self.tableView.reloadData()
-        }
-        if !state.typesList.isEmpty {
-            self.typesList = state.typesList
-            self.tableView.reloadData()
-        }
+        self.pokedexList = state.pokedexList
+        self.filteredPokedexList = state.filteredPokedexList
         self.isFiltering = state.isFiltering
         self.isSearching = state.isSearching
+        self.tableView.reloadData()
     }
     
     typealias StoreSubscriberStateType = PokedexListState
@@ -100,7 +88,7 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
         if isSearching || isFiltering {
             return filteredPokedexList.count
         }
-        return self.pokedexList.count
+        return pokedexList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -131,15 +119,8 @@ class PokedexListViewController: UIViewController, UITableViewDataSource, UITabl
     // -------------------------------------------------------------------------
     // MARK: - SearchBar
     
-    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        var list = pokedexList
-        if isFiltering {
-            list = filteredPokedexList
-        }
-        let filteredPokemon = list.filter({( pokemon : PokemonId) -> Bool in
-            return (pokemon.name?.lowercased().contains(searchText.lowercased()))!
-        })
-        store.dispatch(UpdateFilteredListAction(list: filteredPokemon))
+    func filterContentForSearchText(_ searchText: String) {
+        store.dispatch(SetSearchWordAction(searchWord: searchText))
     }
     
     // -------------------------------------------------------------------------
@@ -170,10 +151,12 @@ extension PokedexListViewController: UISearchResultsUpdating {
 
 extension PokedexListViewController: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        store.dispatch(SetIsSearching(isSearching: true))
+        store.dispatch(SetIsSearchingAction(isSearching: true))
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        store.dispatch(SetIsSearching(isSearching: false))
+        store.dispatch(SetIsSearchingAction(isSearching: false))
+        self.tableView.contentOffset = CGPoint(x: 0, y: searchController.searchBar.frame.height)
+        definesPresentationContext = true
     }
 }

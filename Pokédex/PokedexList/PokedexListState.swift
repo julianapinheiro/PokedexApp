@@ -18,6 +18,7 @@ struct PokedexListState {
     
     var typeScope:Type?
     var genScope:Generation?
+    var searchWord: String
     var isFiltering:Bool
     var isSearching:Bool
 
@@ -30,6 +31,7 @@ struct PokedexListState {
         
         self.typeScope = nil
         self.genScope = nil
+        self.searchWord = ""
         self.isFiltering = false
         self.isSearching = false
     }

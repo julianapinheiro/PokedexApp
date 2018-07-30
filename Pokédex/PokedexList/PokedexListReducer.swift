@@ -30,8 +30,10 @@ struct PokedexListReducer {
             return setTypeScope(state!, action)
         case let action as SetGenScopeAction:
             return setGenScope(state!, action)
-        case let action as SetIsSearching:
+        case let action as SetIsSearchingAction:
             return setIsSearching(state!, action)
+        case let action as SetSearchWordAction:
+            return setSearchWord(state!, action)
         default:
             return state!
         }
@@ -85,11 +87,29 @@ struct PokedexListReducer {
         return state
     }
     
-    fileprivate func setIsSearching(_ state: PokedexListState, _ action: SetIsSearching) -> PokedexListState {
+    fileprivate func setIsSearching(_ state: PokedexListState, _ action: SetIsSearchingAction) -> PokedexListState {
         var state = state
         state.isSearching = action.isSearching
         if !action.isSearching {
             state.filteredPokedexList = sortPokedex(state: state)
+        }
+        return state
+    }
+    
+    fileprivate func setSearchWord(_ state: PokedexListState, _ action: SetSearchWordAction) -> PokedexListState {
+        var state = state
+        state.searchWord = action.searchWord
+        if state.isFiltering {
+            state.filteredPokedexList = sortPokedex(state: state)
+        } else {
+            state.filteredPokedexList = state.pokedexList
+        }
+        state.isSearching = !action.searchWord.isEmpty
+        guard state.isSearching else {
+            return state
+        }
+        state.filteredPokedexList = state.filteredPokedexList.filter { (pokemon: PokemonId) -> Bool in
+            return pokemon.name!.lowercased().contains(action.searchWord.lowercased())
         }
         return state
     }
