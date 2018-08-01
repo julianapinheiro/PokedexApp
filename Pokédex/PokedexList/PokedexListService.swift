@@ -20,14 +20,15 @@ class PokedexListService {
     let typesSize:Int = 18
     let gensSize: Int = 7
     let root:String = "http://pokeapi.co/api/v2/"
-    let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
+    let sprite:String = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
     
     // Other
-    var serviceStore: Store<AppState>
     enum PokedexListServiceError: Error {
         case JSONError
         case PathError
     }
+    var serviceStore: Store<AppState>
+    let spritePath:URL = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
 
     static let shared = PokedexListService(serviceStore: store)
     
@@ -72,29 +73,14 @@ class PokedexListService {
     }
     
     func startPokedex() -> Promise<Bool> {
-        // Try and fetch PokemonId from CoreData
         return Promise<Bool> { seal in
-            var pokedex: [PokemonId] = []
-            let fetchRequest:NSFetchRequest<PokemonId> = PokemonId.fetchRequest()
-            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            fetchRequest.sortDescriptors = [sortDescriptor]
-            do {
-                let pokedexFetched = try context.fetch(fetchRequest)
-                pokedex = pokedexFetched
-            } catch let error as NSError {
-                print("Could not fetch \(error), \(error.userInfo)")
-            }
+            var pokedex: [PokemonId] = fetch(entityName: "PokemonId") as! [PokemonId]
             
             // If not found in CoreData, fetch from API and save in CoreData
             if pokedex.count < pokedexSize {
                 fetchPokedex(objectContext: context).done { _ in
                     print("PokedexListService: Pokedex fetched from API")
-                    do {
-                        let pokedexFetched = try context.fetch(fetchRequest)
-                        pokedex = pokedexFetched
-                    } catch let error as NSError {
-                        print("Could not fetch \(error), \(error.userInfo)")
-                    }
+                    pokedex = self.fetch(entityName: "PokemonId") as! [PokemonId]
                     self.serviceStore.dispatch(UpdatePokedexListAction(list: pokedex))
                     self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
                     seal.fulfill(true)
@@ -105,7 +91,7 @@ class PokedexListService {
             } else {
                 print("PokedexListService: Pokedex fetched from CoreData")
                 serviceStore.dispatch(UpdatePokedexListAction(list: pokedex))
-                self.serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
+                serviceStore.dispatch(UpdateFilteredListAction(list: pokedex))
                 seal.fulfill(true)
             }
         }
@@ -114,27 +100,13 @@ class PokedexListService {
     func startTypes() -> Promise<Bool> {
         // Try and fetch Type from CoreData
         return Promise<Bool> { seal in
-            var typesList:[Type] = []
-            let fetchRequest:NSFetchRequest<Type> = Type.fetchRequest()
-            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            fetchRequest.sortDescriptors = [sortDescriptor]
-            do {
-                let typesFetched = try context.fetch(fetchRequest)
-                typesList = typesFetched
-            } catch let error as NSError {
-                print("Could not fetch \(error), \(error.userInfo)")
-            }
+            var typesList:[Type] = fetch(entityName: "Type") as! [Type]
             
             // If not found in CoreData, fetch from API and save in CoreData
             if typesList.count < typesSize {
                 fetchTypes().done { _ in
                     print("PokedexListService: Types fetched from API")
-                    do {
-                        let typesFetched = try context.fetch(fetchRequest)
-                        typesList = typesFetched
-                    } catch let error as NSError {
-                        print("Could not fetch \(error), \(error.userInfo)")
-                    }
+                    typesList = self.fetch(entityName: "Type") as! [Type]
                     self.serviceStore.dispatch(UpdateTypesListAction(list: typesList))
                     seal.fulfill(true)
                 }.catch { _ in
@@ -152,28 +124,13 @@ class PokedexListService {
     func startGenerations() -> Promise<Bool> {
         // Try and fetch Generations from CoreData
         return Promise<Bool> { seal in
-            var generations: [Generation] = []
-            let fetchRequest:NSFetchRequest<Generation> = Generation.fetchRequest()
-            let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-            fetchRequest.sortDescriptors = [sortDescriptor]
-            do{
-                let gensFetched = try context.fetch(fetchRequest)
-                generations = gensFetched
-                
-            } catch let error as NSError {
-                print("Could not fetch \(error), \(error.userInfo)")
-            }
+            var generations: [Generation] = fetch(entityName: "Generation") as! [Generation]
             
             // If not found in CoreData, fetch from API and save in CoreData
             if generations.count < gensSize {
                 fetchGenerations().done { _ in
                     print("PokedexListService: Generations fetched from API")
-                    do {
-                        let gensFetched = try context.fetch(fetchRequest)
-                        generations = gensFetched
-                    } catch let error as NSError {
-                        print("Could not fetch \(error), \(error.userInfo)")
-                    }
+                    generations = self.fetch(entityName: "Generation") as! [Generation]
                     self.serviceStore.dispatch(UpdateGenListAction(list: generations))
                     seal.fulfill(true)
                 }.catch { _ in
@@ -197,7 +154,6 @@ class PokedexListService {
         for pokemonItem in list  {
             _ = Mapper<PokemonId>(context: privateContext).map(JSON: pokemonItem)
             try! objectContext.save()
-            //print("Saving object PokemonId id=\(pokemon!.id)")
         }
     }
     
@@ -205,18 +161,31 @@ class PokedexListService {
         let type = Mapper<Type>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
         type?.fetchPokemon(objectContext)
         try! context.save()
-        //print("PokedexListService: Fetched and saved Type id=\(String(describing: type?.id)) name=\(String(describing: type?.name))")
     }
     
     func createGenerationFromJSON(_ JSON: [String: Any], _ objectContext: NSManagedObjectContext) {
         let gen = Mapper<Generation>(context: PrivateMapContext(objectContext)).map(JSON: JSON)
         gen?.fetchPokemon(objectContext)
         try! context.save()
-        //print("PokedexListService: Fetched and saved Generation id=\(String(describing: gen?.id)) name=\(String(describing: gen?.name))")
     }
     
     // -------------------------------------------------------------------------
-    // MARK: - Fetch Methods
+    // MARK: - Fetch from CoreData Method
+    
+    func fetch(entityName: String) -> [Any] {
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: entityName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        do {
+            let fetched = try context.fetch(fetchRequest)
+            return fetched
+        } catch let error as NSError {
+            print("Could not fetch \(error), \(error.userInfo)")
+            return []
+        }
+    }
+    
+    // -------------------------------------------------------------------------
+    // MARK: - Fetch from API Methods
     
     // -- Fetch from pokemon/limit?=802
     // Um request cria todos os objetos PokemonId :D
@@ -248,7 +217,7 @@ class PokedexListService {
         let typesIndex: [Int] = Array(1...typesSize)
         return when(fulfilled: typesIndex.map { index in
             return Promise<Bool> { seal in
-                guard let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(index)).appendingPathComponent("/") else {
+                guard let url = URL(string: root)?.appendingPathComponent("type").appendingPathComponent(String(index)) else {
                     seal.reject(PokedexListServiceError.PathError)
                     return
                 }
@@ -274,7 +243,7 @@ class PokedexListService {
         let generationsIndex: [Int] = Array(1...gensSize)
         return when(fulfilled: generationsIndex.map { index in
             return Promise<Bool> { seal in
-                guard let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(index)).appendingPathComponent("/") else {
+                guard let url = URL(string: root)?.appendingPathComponent("generation").appendingPathComponent(String(index)) else {
                     seal.reject(PokedexListServiceError.PathError)
                     return
                 }
@@ -298,34 +267,35 @@ class PokedexListService {
     
     // -- Fetch Sprite from API
     func fetchSprite(pokemonId: Int, completion: (_ success: Bool) -> Void) {
-        
-        // If file already exists
         let dirPath = PokedexListService.getDocumentsDirectory().appendingPathComponent("pokemon")
         let filePath = dirPath.appendingPathComponent(String(pokemonId) + ".png")
-        if FileManager.default.fileExists(atPath: filePath.relativePath) {
-            //print("Pokemon Sprite already saved for id=" + String(pokemonId))
+        guard !FileManager.default.fileExists(atPath: filePath.relativePath) else {
             completion(false)
+            return
         }
-        
-        // Create Directory "pokemon"
         try! FileManager.default.createDirectory(atPath: dirPath.relativePath, withIntermediateDirectories: true)
-        
-        //placeholder
-        let spritePath = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + String(pokemonId) + ".png"
-        
-        // Fetch image from API
+        guard let spriteURL = URL(string: sprite + String(pokemonId) + ".png") else {
+            completion(false)
+            return
+        }
         let data:Data
         do {
-            data = try Data(contentsOf: URL(string: spritePath)!)
+            data = try Data(contentsOf: spriteURL)  // Fetch image from API
         } catch {
             print("PokedexListService: error fetching image")
+            completion(false)
             return
         }
         let image = UIImage(data: data, scale: UIScreen.main.scale)!
         let pngImage = UIImagePNGRepresentation(image)
         
-        // Save image locally
-        try! pngImage?.write(to: filePath, options: .atomic)
+        do {
+            try pngImage?.write(to: filePath, options: .atomic)
+        } catch {
+            print("PokedexListService: error fetching image")
+            completion(false)
+            return
+        }
         //print("Saving Sprite for id=" + String(pokemonId))
         completion(true)
     }

@@ -35,6 +35,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
             subcription
                 .select { state in (state.pokedexListState) }
         }
+        setupUI()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -85,8 +86,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     // MARK: - Table view data source
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section
-        {
+        switch section {
         case 0:
             return typesList.count
         case 1:
@@ -102,8 +102,7 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(_ tableView: UITableView,titleForHeaderInSection section: Int) -> String?
     {
-        switch section
-        {
+        switch section {
         case 0:
             return "By Type"
         case 1:
@@ -115,32 +114,31 @@ class SortViewController: UIViewController, UITableViewDataSource, UITableViewDe
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SortTableViewCell")!
-        switch (indexPath.section)
-        {
-            case 0:
-                if typesList[indexPath.row] == nil {
-                    cell.textLabel?.text = "All"
-                } else {
-                    cell.textLabel?.text = typesList[indexPath.row]!.name?.capitalized
-                }
-                if typesList[indexPath.row] == selectedType {
-                    cell.accessoryType = UITableViewCellAccessoryType.checkmark
-                } else {
-                    cell.accessoryType = UITableViewCellAccessoryType.none
-                }
-            case 1:
-                if genList[indexPath.row] == nil {
-                    cell.textLabel?.text = "All"
-                } else {
-                    cell.textLabel?.text = genList[indexPath.row]!.name?.capitalized.replacingOccurrences(of: "-", with: " ")
-                }
-                if genList[indexPath.row] == selectedGen {
-                    cell.accessoryType = UITableViewCellAccessoryType.checkmark
-                } else {
-                    cell.accessoryType = UITableViewCellAccessoryType.none
-                }
-            default:
-                cell.textLabel?.text = ""
+        switch (indexPath.section) {
+        case 0:
+            if typesList[indexPath.row] == nil {
+                cell.textLabel?.text = "All"
+            } else {
+                cell.textLabel?.text = typesList[indexPath.row]!.name?.capitalized
+            }
+            if typesList[indexPath.row] == selectedType {
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryType.none
+            }
+        case 1:
+            if genList[indexPath.row] == nil {
+                cell.textLabel?.text = "All"
+            } else {
+                cell.textLabel?.text = genList[indexPath.row]!.name?.capitalized.replacingOccurrences(of: "-", with: " ")
+            }
+            if genList[indexPath.row] == selectedGen {
+                cell.accessoryType = UITableViewCellAccessoryType.checkmark
+            } else {
+                cell.accessoryType = UITableViewCellAccessoryType.none
+            }
+        default:
+            cell.textLabel?.text = ""
         }
         
         return cell
